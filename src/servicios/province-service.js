@@ -15,6 +15,7 @@ export class ProvinceService {
                 total: query2,
             },
         }
+        
     }
     
 }
