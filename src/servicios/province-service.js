@@ -1,9 +1,8 @@
 export class ProvinceService {
     getAllUsers(pageSize, requestedPage){
 
-      //const query = `select * from province limit ${pageSize} offset ${requestedPage}`;
-      //const query2 = `select count(*) from province`;
-
+      const query = `select * from province limit ${pageSize} offset ${requestedPage}`;
+      const query2 = `select count(*) from province`;
         throw new Error("Error en el servicio de provincias");
 
         return{

@@ -1,8 +1,8 @@
 export class UserService {
     getAllUsers(pageSize, requestedPage){
 
-      //const query = `select * from user limit ${pageSize} offset ${requestedPage}`;
-      //const query2 = `select count(*) from user`;
+      const query = `select * from user limit ${pageSize} offset ${requestedPage}`;
+      const query2 = `select count(*) from user`;
 
         throw new Error("Error en el servicio de usuarios");
 

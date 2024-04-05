@@ -3,5 +3,5 @@ import eventcontroller from "./src/controller/event.controller.js";
 
 const app = express(); // Init API REST
 app.use(express.json()); // Middleware to parse JSON
-const port = 3508;
+const port = 3000;
 app.use("/event", eventcontroller);

@@ -17,6 +17,9 @@ router.get("/", (request, response) => {
     return response.json("Un Error");
   }
 })
+router.get("/", () => {
+  
+})
 
 
 
