@@ -31,4 +31,9 @@ export class EventService {
       }
       return query;
     }
+    EventDetail(name,description,startDate,durationInMinutes,price,enabledForEnrollment,maxAssistance,fullAdress){
+      const query= "SELECT events.name,events.description,events.start_date,events.duration_in_minutes,events.price,events.enabled_for_enrollment,events.max_assistance,event_location.full_adress FROM events JOIN event_location ON events.id_event_location = event_location.id WHERE id =";
+      return query;
+    }
+    
   }
