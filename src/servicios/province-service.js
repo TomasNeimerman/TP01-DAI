@@ -1,37 +1,47 @@
+import { Bd } from "../repositories copy/event-repositories";
+
 export class ProvinceService {
-    // provinciasServicio.js
-
-CrearEjercicio7Provincias(id, name, full_name, latitude, longitude, display_order) {
-    const sql = `INSERT INTO provinces (id, name, full_name, latitude, longitude, display_order) 
-                 VALUES (${id}, $2, $3, $4, $2, $6)`;
-    try {
-        Bd.Consulta(sql, [id, name, full_name, latitude, longitude, display_order]);
-        return "Provincia creada con éxito";
-    } catch (error) {
-        console.error("Error en la creación de provincia:", error);
-        throw new Error("Error en la creación de provincia");
+    CreateProvince(id, name, full_name, latitude, longitude, display_order){
+        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${id}','${name}', '${full_name}', '${latitude}', '${longitude}', ${display_order})`;
+        try{
+            Bd.Consulta(sql)
+            return("Succesfuly created")
+        }catch{
+            console.log("Error");
+            return response.json("Error");
+        }
     }
-}
-
-EditarEjercicio7Provincia(id, name, full_name, latitude, longitude, display_order) {
-    const sql = `UPDATE provinces 
-                 SET name = ${id}, full_name = $2, latitude = $3, longitude = $4, display_order = $5 
-                 WHERE id = $6`;
-    try {
-        Bd.Consulta(sql, [name, full_name, latitude, longitude, display_order, id]);
-        return "Provincia editada con éxito";
-    } catch (error) {
-        console.error("Error en la edición de provincia:", error);
-        throw new Error("Error en la edición de provincia");
+    EditProvince(id, name, full_name, latitude, longitude, display_order){
+        const sql = `UPDATE province SET id = '${id}', name = '${name}', full_name = '${full_name}', latitude = '${latitude}', longitude = '${longitude}', display_order = '${display_order}'
+        WHERE id = '${id}'`;
+        try{
+            Bd.Consulta(sql)
+            return("Edited Succesfuly")
+        }catch{
+            console.log("error");
+            return response.json("error");
+        }
     }
-}
-
-EliminarEjercicio7Provincia(id) {
-    const sql = `DELETE FROM provinces WHERE id = ${id}`;
-    
-}
-
-
-
-    
+    DeleteProvince(id){
+        const sql = `DELETE * FROM province WHERE id = '${id}`;
+        try{
+            Bd.Consulta(sql)
+            return("Succesfuly Deleted")
+        }catch(error){
+            console.log("Error")
+            return response.json("error")
+        }
+    }
+    GetProvince(id){
+        const sql = `SELECT * FROM PROVINCE WHERE id = '${id}'`
+        const SavedData = result.map(row =>({
+            id: row.id,
+            name: row.name,
+            full_name: row.full_name,
+            latitude: row.latitude,
+            longitude: row.longitude,
+            display_order: row.display_order
+        }))
+        return{ collection: SavedData };
+    }
 }

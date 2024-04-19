@@ -1,7 +1,7 @@
 import express, { response } from "express";
 import {UserService} from "../servicios/user-service.js/"
 const router = express.Router();
-const eventService = new EventService();
+const userService = new UserService();
 
 
 router.get("/:id/enrollment", (request, response) => {
@@ -11,7 +11,7 @@ router.get("/:id/enrollment", (request, response) => {
     const attended = request.query.attended
     const rating = request.query.rating
     try{
-        const BusquedaUsuario = UserService.GetAllUsers(first_name, last_name, username, attended, rating)
+        const BusquedaUsuario = userService.GetAllUsers(first_name, last_name, username, attended, rating)
         return response.json(BusquedaUsuario)
     }catch(error){
         console.log("Ej 5")
@@ -22,7 +22,7 @@ router.get("/:id/enrollment", (request, response) => {
 router.post('/user/login', (request, response) => {
     const { username, password } = request.body;
     try {
-        const autenticarUsuario = EventosServicios.autenticarUsuario(username, password);
+        const autenticarUsuario = userService.LoginUser(username, password);
         return response.json(autenticarUsuario);
     } catch (error) {
         console.error('Error en la autenticación del usuario:', error);
@@ -33,7 +33,7 @@ router.post('/user/login', (request, response) => {
 router.post('/user/register', (request, response) => {
     const { first_name, last_name, username, password } = request.body;
     try {
-        const autenticarRegistro = EventosServicios.autenticarRegistro(first_name, last_name, username, password);
+        const autenticarRegistro = userService.RegisterUser(first_name, last_name, username, password);
         return response.json(autenticarRegistro);
     } catch (error) {
         console.error('Error en el registro de usuario:');

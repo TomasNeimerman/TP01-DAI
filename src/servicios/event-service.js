@@ -85,7 +85,7 @@ export class EventService {
           WHERE 
               e.id = ${id}`;
       const result = Bd.Consulta(sql, [id]);
-      const parsedDB = result.map(row => ({
+      const SavedData = result.map(row => ({
           event: {
               id: row.id,
               name: row.name,
@@ -107,44 +107,59 @@ export class EventService {
       }));
   
       return {
-          collection: parsedDB,
+          collection: SavedData,
       };
   }
   CreateEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
-    const sql = `INSERT INTO events (id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
+    const sql = `INSERT INTO events (id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
     values ('${id}', '${name}', '${description}', '${id_event_category}', '${id_envet_location}', '${start_date}', '${duration_in_minutes}', '${price}', '${enabled_for_enrollment}', '${max_assistance}', '${id_creator_user}')`;
     try{
         Bd.Consulta(sql)
-        return("Evento creado efectivamente")
+        return("Succesfuly created")
     } catch(error){
-        console.log("Error creacion de evento");
-        return response.json("Error creacion de evento");
+        console.log("Error");
+        return response.json("Error");
     }
 }
 
-EditEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
-    const sql = `UPDATE event SET id = '${id}', name = '${name}', description = '${description}', id_event_category = '${id_event_category}', id_envet_location = '${id_envet_location}', start_date = '${start_date}', duration_in_minutes = '${duration_in_minutes}', price = '${price}', enabled_for_enrollment = '${enabled_for_enrollment}', max_assistance = '${max_assistance}' 
+EditEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
+    const sql = `UPDATE event SET id = '${id}', name = '${name}', description = '${description}', id_event_category = '${id_event_category}', id_event_location = '${id_event_location}', start_date = '${start_date}', duration_in_minutes = '${duration_in_minutes}', price = '${price}', enabled_for_enrollment = '${enabled_for_enrollment}', max_assistance = '${max_assistance}' 
     WHERE id = '${id}' AND id_creator_user = '${id_creator_user}'`
     try{
         Bd.Consulta(sql)
-        return("Evento editado efectivamente")
+        return("Edited Succesfuly")
     } catch(error){
-        console.log("Error edicion de evento");
-        return response.json("Error edicion de evento");
+        console.log("error");
+        return response.json("error");
     }
 }
 
 DeleteEvent(id, id_creator_user){
-    const sql = `DELETE * 
-    FROM events 
+    const sql = `DELETE * FROM events 
     WHERE id = '${id}' AND id_creator_user = '${id_creator_user}'`
     try{
         Bd.Consulta(sql)
-        return("Evento borrado efectivamente")
+        return("Succesfuly deleted")
     } catch(error){
         console.log("Error borrado de evento");
         return response.json("Error borrado de evento");
     }
+}
+GetEvent(id, id_creator_user){
+    const sql =  `SELECT * FROM EVENTS WHERE id = '${i}' AND id_creator_user = '${id_creator_user}'`;
+    const SavedData = result.map(row => ({
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    start_date: row.start_date,
+    duration_in_minutes: row.duration_in_minutes,
+    price: row.price,
+    enabled_for_enrollment: row.enabled_for_enrollment,
+    max_assistance: row.max_assistance,
+    }));
+    return {
+        collection: SavedData
+    };
 }
 InsciptEvent(eventId, userId) {
     const sql = `INSERT INTO event_enrollments (id_event, id_user) VALUES (${eventId}, ${userId})`;

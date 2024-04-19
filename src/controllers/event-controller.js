@@ -10,7 +10,7 @@ router.get("/", (request, response) => {
   const offset = request.query.offset;
   if(limit != null && offset != null){
   try {
-    const allEvents = EventService.getAllEvents(pageSize, page);
+    const allEvents = eventService.getAllEvents(pageSize, page);
     return response.json(allEvents);
   } catch (error) {
     console.log("ErrorEj2");
@@ -30,7 +30,7 @@ router.get("/", (request,response) => {
     const tag = request.query.tag;
     if(limit != null && offset != null){
     try{
-      var BusquedaEvento = EventService.SearchEvents(name,category,)
+      var BusquedaEvento = eventService.SearchEvents(name,category,)
       return console.log(BusquedaEvento);
     }catch(error){
       console.log("ErrorEj3");
@@ -40,14 +40,14 @@ router.get("/", (request,response) => {
 })
 router.get("/:id", (request, response) => {
   try {  
-      const evento = EventService.EventDetail(request.params.id);
+      const evento = eventService.EventDetail(request.params.id);
       return response.json(evento)
   } catch(error){
       console.log("ErrorEj4")
       return response.json("ErrorEj4")
   }
 })
-router.post("/creation_event", (request, response) => {
+router.post("/create_event", (request, response) => {
   const id = request.query.id
   const name = request.name.id
   const description = request.description.id
@@ -60,10 +60,10 @@ router.post("/creation_event", (request, response) => {
   const max_assistance = request.max_assistance.id
   const id_creator_user = request.id_creator_user.id
   try{
-      const confirmacion = EventService.CreateEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
-      return response.json(confirmacion)
+      const verification = eventService.CreateEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
+      return response.json(verification)
   } catch(error){
-      console.log("error creation")
+      console.log("error")
       return response.json("error")
   }
 })
@@ -72,15 +72,15 @@ router.put("/:id/:id_creator_user/edition_event", (request, response) => {
   const name = request.query.name
   const description = request.query.description
   const id_event_category = request.query.id_event_category
-  const id_envet_location = request.query.id_envet_location
+  const id_event_location = request.query.id_envet_location
   const start_date = request.query.start_date
   const duration_in_minutes = request.query.duration_in_minutes
   const price = request.query.price
   const enabled_for_enrollment = request.query.enabled_for_enrollment
   const max_assistance = request.query.max_assistance
   try{
-      const confirmacion = EventService.EditEvent(request.params.id, request.params.id_creator_user, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
-      return response.json(confirmacion)
+      const verification = eventService.EditEvent(request.params.id, request.params.id_creator_user, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
+      return response.json(verification)
   } catch(error){
       console.log("error")
       return response.json("errror")
@@ -89,13 +89,24 @@ router.put("/:id/:id_creator_user/edition_event", (request, response) => {
 
 router.delete("/:id/:id_creator_user/delete_event", (request, response) => {
   try{
-      const confirmacion = EventService.DeleteEvent(request.params.id, request.params.id_creator_user)
-      return response.json(confirmacion)
+      const verification = eventService.DeleteEvent(request.params.id, request.params.id_creator_user)
+      return response.json(verification)
   }catch(error){
       console.log("error")
       return response.json("error")
   }
 })
+router.get('/:id/:id_creator_user/get_event', (request, response) => {
+  try{
+    const verification = eventService.GetEvent(request.params.id, request.params.id_creator_user)
+    return response.json(verification)
+  }catch(error){
+    console.log("error")
+    return response.json("error")
+  }
+})
+
+
 router.post('/event/:id/enrollment', (request, response) => {
   const eventId = request.params.id;
   const userId = request.body.userId;
@@ -104,8 +115,8 @@ router.post('/event/:id/enrollment', (request, response) => {
       const inscripcion = eventosServicios.inscribirseEnEvento(eventId, userId);
       return response.json({ message: inscripcion });
   } catch (error) {
-      console.error('Error al inscribirse en el evento:', error);
-      return response.status(500).json({ error: 'Error interno del servidor' });
+      console.error('error');
+      return response.json('error');
   }
 });
 router.patch('/event/:id/enrollment', (request, response) => {
@@ -115,12 +126,13 @@ router.patch('/event/:id/enrollment', (request, response) => {
   const feedback = request.body.feedback; 
 
   try {
-      const resultado = EventService.GiveRating(eventId, userId, rating, feedback);
+      const resultado = eventService.GiveRating(eventId, userId, rating, feedback);
       return response.json(resultado);
   } catch (error) {
       console.error('error');
       return response.json('error');
   }
 });
+
 
 export default router;

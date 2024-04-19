@@ -10,7 +10,7 @@ export class UserService {
             WHERE 
                 u.id = ${id} AND u.username = ${username} AND u.first_name = ${firstName} AND u.last_name = ${lastName} AND ee.attended = ${attended} AND ee.rating = ${rating}`;
         const result = Bd.Consulta(sql, [id, username, firstName, lastName, attended, rating]);
-        const parsedDB = result.map(row => ({
+        const SavedData = result.map(row => ({
             id: row.id,
             username: row.username,
             first_name: row.first_name,
@@ -20,10 +20,10 @@ export class UserService {
             description: row.description
         }));
         return {
-            collection: parsedDB
+            collection: SavedData
         };}
-        autenticarUsuario(username, password) {
-            /*const sql = `SELECT id, username, password FROM users WHERE username = $1`;
+        LoginUser(username, password) {
+            const sql = `SELECT id, username, password FROM users WHERE username = '${username}'`;
             const result = Bd.Consulta(sql, [username]);
             if (result.rows.length === 0) {
                 return { error: 'Nombre de usuario incorrecto' };
@@ -36,25 +36,25 @@ export class UserService {
             }
         
            
-            return { token }; despues lo veo de ultima */
+            return { token }; 
         }
         
   
-        autenticarRegistro(first_name, last_name, username, password) {
+        RegisterUser(first_name, last_name, username, password) {
             const hashedPassword = bcrypt.hashSync(password, 10);
-            const sql = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING id, username`;
+            const sql = `INSERT INTO users (first_name, last_name, username, password) VALUES ('${first_name}', '${last_name}', '${username}', '${password}') RETURNING id, username`;
             const result = Bd.Consulta(sql, [first_name, last_name, username, hashedPassword]);
             return result;
         }
         
-        RecolectUsuario(first_name, last_name, username, attended, rating) {
-            const sql = `SELECT id, username, first_name, last_name FROM users WHERE first_name = $1 AND last_name = $2 AND username = $3`;
+        GetUser(first_name, last_name, username, attended, rating) {
+            const sql = `SELECT id, username, first_name, last_name FROM users WHERE first_name = '${first_name}' AND last_name = '${last_name}' AND username = '${username}'`;
             const result = Bd.Consulta(sql, [first_name, last_name, username]);
             return result.rows;
         }
         
      
-        verificarInscripcion(enabled_for_enrollment, id_event, max_assistance) {
+        VerifyDescription(enabled_for_enrollment, id_event, max_assistance) {
             
         }
         
