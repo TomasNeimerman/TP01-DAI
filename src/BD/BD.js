@@ -1,6 +1,7 @@
 export const BDConfig = {
     host: "localHost",
     port: 3000,
-    user: "reset",
+    user: "root",
+    password: "root",
     database: "DAI-Eventos"
 };
