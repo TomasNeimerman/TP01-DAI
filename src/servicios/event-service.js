@@ -1,4 +1,4 @@
-
+import bd from "../repositories/provinces-repositories.js"
 export class EventService {
   getAllEvent(pageSize, requestedPage) {
     try {
@@ -16,31 +16,31 @@ export class EventService {
                     LIMIT ${pageSize} OFFSET ${requestedPage}`;
         const result = Bd.Consulta(sql, [pageSize, requestedPage]);
         const events = result.map(row => ({
-            id: row.id,
-            name: row.event_name,
-            description: row.event_description,
-            start_date: row.start_date,
-            duration_in_minutes: row.duration_in_minutes,
-            price: row.price,
-            max_assistance: row.max_assistance,
-            tags: row.tag_name,
+            id: 1,
+            name: "evento1",
+            description: "hola",
+            start_date: "05-23-2024",
+            duration_in_minutes: 300,
+            price: 15000,
+            max_assistance: 300,
+            tags: "fiesta",
             creator_user: {
-                id: row.user_id,
-                username: row.username,
-                first_name: row.user_first_name,
-                last_name: row.user_last_name
+                id: 1,
+                username: "neotictom",
+                first_name: "neotic",
+                last_name: "tom"
             },
             category: {
-                id: row.category_id,
-                name: row.category_name
+                id: 1,
+                name: "fiesta"
             },
             location: {
-                id: row.location_id,
-                name: row.location_name,
-                full_address: row.full_address,
-                latitude: row.latitude,
-                longitude: row.longitude,
-                max_capacity: row.max_capacity
+                id: 1,
+                name: "caba",
+                full_address: "Capital federal, Provincia de Buenos Aires, Argentina",
+                latitude: 24.489102301273,
+                longitude: 64.31237812387,
+                max_capacity: 300
             }
         }));
 
@@ -87,22 +87,24 @@ export class EventService {
       const result = Bd.Consulta(sql, [id]);
       const SavedData = result.map(row => ({
           event: {
-              id: row.id,
-              name: row.name,
-              description: row.description,
-              start_date: row.start_date,
-              duration_in_minutes: row.duration_in_minutes,
-              price: row.price,
-              enabled_for_enrollment: row.enabled_for_enrollment,
-              max_assistance: row.max_assistance,
-          },
-          location: {
-              id: row.location_id,
-              name: row.location_name,
-              full_address: row.full_address,
-              longitude: row.longitude,
-              latitude: row.latitude,
-              max_capacity: row.max_capacity,
+            "event": {
+              "id": 2,
+              "name": "navidad",
+              "description": "descripcion",
+              "start_date": "12-24-2024",
+              "duration_in_minutes": 1440,
+              "price": 0,
+              "enabled_for_enrollment": true,
+              "max_assistance": 2024
+            },
+            "location": {
+              "id": 2,
+              "name": "CABA",
+              "full_address": "Capital Federal, Buenos Aires, Argentina",
+              "longitude": 0.0,
+              "latitude": 0.0,
+              "max_capacity": 1000
+            }
           }
       }));
   
@@ -112,7 +114,7 @@ export class EventService {
   }
   CreateEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
     const sql = `INSERT INTO events (id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
-    values ('${id}', '${name}', '${description}', '${id_event_category}', '${id_envet_location}', '${start_date}', '${duration_in_minutes}', '${price}', '${enabled_for_enrollment}', '${max_assistance}', '${id_creator_user}')`;
+    values ('3', 'Fiesta de Invierno', 'Una celebración para disfrutar de la nieve y el frío', '2', '3', '01-15-2025', '1200', '10', 'true', '500', '2')`;
     try{
         Bd.Consulta(sql)
         return("Succesfuly created")
@@ -123,7 +125,7 @@ export class EventService {
 }
 
 EditEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
-    const sql = `UPDATE event SET id = '${id}', name = '${name}', description = '${description}', id_event_category = '${id_event_category}', id_event_location = '${id_event_location}', start_date = '${start_date}', duration_in_minutes = '${duration_in_minutes}', price = '${price}', enabled_for_enrollment = '${enabled_for_enrollment}', max_assistance = '${max_assistance}' 
+    const sql = `UPDATE event SET id = '4', 'name = 'Fiesta de Cumpleaños', description = 'Una celebración para festejar un año más de vida', id_event_category = '4', id_event_location = '6', start_date = '09-30-2025', duration_in_minutes = '600', price = '15', enabled_for_enrollment = 'true', max_assistance = '300' 
     WHERE id = '${id}' AND id_creator_user = '${id_creator_user}'`
     try{
         Bd.Consulta(sql)

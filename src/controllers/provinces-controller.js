@@ -17,7 +17,7 @@ router.post("/create_province", (request,response) => {
         return response.json("error")
     }
 })
-router.put("/:id/edition_province", (request,response) => {
+router.post("/:id/edition_province", (request,response) => {
     const id = request.query.id
     const name = request.query.id
     const full_name = request.query.full_name
