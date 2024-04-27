@@ -1,10 +1,10 @@
-import { Bd } from "../repositories copy/event-repositories";
+import Bd from "../repositories/provinces-repositories";
 
 export class ProvinceService {
     CreateProvince(id, name, full_name, latitude, longitude, display_order){
-        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${id}','${name}', '${full_name}', '${latitude}', '${longitude}', ${display_order})`;
+        
         try{
-            Bd.Consulta(sql)
+            Bd.Query1(id, name, full_name, latitude, longitude, display_order)
             return("Succesfuly created")
         }catch{
             console.log("Error");
@@ -12,10 +12,9 @@ export class ProvinceService {
         }
     }
     EditProvince(id, name, full_name, latitude, longitude, display_order){
-        const sql = `UPDATE province SET id = '${id}', name = '${name}', full_name = '${full_name}', latitude = '${latitude}', longitude = '${longitude}', display_order = '${display_order}'
-        WHERE id = '${id}'`;
+        
         try{
-            Bd.Consulta(sql)
+            Bd.Query2(id, name, full_name, latitude, longitude, display_order)
             return("Edited Succesfuly")
         }catch{
             console.log("error");
@@ -23,9 +22,9 @@ export class ProvinceService {
         }
     }
     DeleteProvince(id){
-        const sql = `DELETE * FROM province WHERE id = '${id}`;
+        
         try{
-            Bd.Consulta(sql)
+            Bd.Query3(id)
             return("Succesfuly Deleted")
         }catch(error){
             console.log("Error")
@@ -33,15 +32,13 @@ export class ProvinceService {
         }
     }
     GetProvince(id){
-        const sql = `SELECT * FROM PROVINCE WHERE id = '${id}'`
-        const SavedData = result.map(row =>({
-            id: row.id,
-            name: row.name,
-            full_name: row.full_name,
-            latitude: row.latitude,
-            longitude: row.longitude,
-            display_order: row.display_order
-        }))
-        return{ collection: SavedData };
+        
+        try{
+            Bd.Query4(id)
+            return("succesfull")
+        }catch(error){
+            console.log("error")
+            return response.json("error")
+        }
     }
 }

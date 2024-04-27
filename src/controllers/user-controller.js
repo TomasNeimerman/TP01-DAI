@@ -20,7 +20,8 @@ router.get("/:id/enrollment", (request, response) => {
 
 })
 router.post('/user/login', (request, response) => {
-    const { username, password } = request.body;
+    const username = "pepitogamer"
+    const password = "abc123"
     try {
         const autenticarUsuario = userService.LoginUser(username, password);
         return response.json(autenticarUsuario);

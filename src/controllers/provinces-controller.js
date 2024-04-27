@@ -3,12 +3,12 @@ import {ProvinceService} from "../servicios/province-service.js/"
 const router = express.Router();
 const provinceService = new ProvinceService();
 router.post("/create_province", (request,response) => {
-    const id = request.query.id
-    const name = request.query.id
-    const full_name = request.query.full_name
-    const latitude = request.query.latitude
-    const longitude = request.query.longitude
-    const display_order = request.query.display_order
+    const id = 2
+    const name = "Cordoba"
+    const full_name = "Cordoba"
+    const latitude = "0.0"
+    const longitude = "5000.00"
+    const display_order = "2"
     try{
         const verification = provinceService.CreateProvince(id,name,full_name,latitude,longitude,display_order)
         return response.json(verification)
@@ -18,12 +18,12 @@ router.post("/create_province", (request,response) => {
     }
 })
 router.post("/:id/edition_province", (request,response) => {
-    const id = request.query.id
-    const name = request.query.id
-    const full_name = request.query.full_name
-    const latitude = request.query.latitude
-    const longitude = request.query.longitude
-    const display_order = request.query.display_order
+    const id = 2
+    const name = "Mendoza"
+    const full_name = "Mendoza"
+    const latitude = "0.0"
+    const longitude = "3000.00"
+    const display_order = "3"
     try{
         const verification = provinceService.EditProvince(id,name,full_name,latitude,longitude,display_order)
         return response.json(verification)
@@ -34,14 +34,14 @@ router.post("/:id/edition_province", (request,response) => {
 })
 router.delete("/:id/delete_event", (request,response) => {
     try{
-        const verification = provinceService.DeleteProvince(request.params.id)
+        const verification = provinceService.DeleteProvince(2)
     }catch{
 
     }
 })
 router.get("/:id/get_province", (request,response) => {
     try{
-        const verification = provinceService.GetProvince
+        const verification = 2
         return response.json("error")
     }catch(error){
         console.log("error")

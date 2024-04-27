@@ -22,15 +22,13 @@ router.get("/", (request, response) => {
 }
 })
 router.get("/", (request,response) => {
-    const limit = request.query.limit;
-  const offset = request.query.offset;
-  const name = request.query.name;
-    const category = request.query.category;
-    const startDate = request.query.startDate;
-    const tag = request.query.tag;
+  const name = "evento1";
+  const category = "hola";
+  const startDate = "05-23-2024";
+  const tag = "fiesta";  
     if(limit != null && offset != null){
     try{
-      var BusquedaEvento = eventService.SearchEvents(name,category,)
+      var BusquedaEvento = eventService.SearchEvents(name,category,startDate,tag)
       return console.log(BusquedaEvento);
     }catch(error){
       console.log("ErrorEj3");
@@ -48,17 +46,17 @@ router.get("/:id", (request, response) => {
   }
 })
 router.post("/create_event", (request, response) => {
-  const id = request.query.id
-  const name = request.name.id
-  const description = request.description.id
-  const id_event_category = request.id_event_category.id
-  const id_envet_location = request.id_envet_location.id
-  const start_date = request.start_date.id
-  const duration_in_minutes = request.duration_in_minutes.id
-  const price = request.price.id
-  const enabled_for_enrollment = request.enabled_for_enrollment.id
-  const max_assistance = request.max_assistance.id
-  const id_creator_user = request.id_creator_user.id
+  const id = 3
+  const name = "hola"
+  const description = "chau"
+  const id_event_category = "fiesta"
+  const id_envet_location = "Argentina"
+  const start_date = "05-12-2024"
+  const duration_in_minutes = "300"
+  const price = "300"
+  const enabled_for_enrollment = "true"
+  const max_assistance = "1000"
+  const id_creator_user = "1"
   try{
       const verification = eventService.CreateEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
       return response.json(verification)
@@ -69,17 +67,17 @@ router.post("/create_event", (request, response) => {
 })
 
 router.put("/:id/:id_creator_user/edition_event", (request, response) => {
-  const name = request.query.name
-  const description = request.query.description
-  const id_event_category = request.query.id_event_category
-  const id_event_location = request.query.id_envet_location
-  const start_date = request.query.start_date
-  const duration_in_minutes = request.query.duration_in_minutes
-  const price = request.query.price
-  const enabled_for_enrollment = request.query.enabled_for_enrollment
-  const max_assistance = request.query.max_assistance
+  const name = "nombre"
+  const description = "descripcion"
+  const id_event_category = "restaurant"
+  const id_event_location = "Argentina"
+  const start_date = "21-06-2024"
+  const duration_in_minutes = "120"
+  const price = "4000"
+  const enabled_for_enrollment = "false"
+  const max_assistance = "30"
   try{
-      const verification = eventService.EditEvent(request.params.id, request.params.id_creator_user, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
+      const verification = eventService.EditEvent(3, 1, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
       return response.json(verification)
   } catch(error){
       console.log("error")
@@ -89,7 +87,7 @@ router.put("/:id/:id_creator_user/edition_event", (request, response) => {
 
 router.delete("/:id/:id_creator_user/delete_event", (request, response) => {
   try{
-      const verification = eventService.DeleteEvent(request.params.id, request.params.id_creator_user)
+      const verification = eventService.DeleteEvent(3, 1)
       return response.json(verification)
   }catch(error){
       console.log("error")
@@ -98,7 +96,7 @@ router.delete("/:id/:id_creator_user/delete_event", (request, response) => {
 })
 router.get('/:id/:id_creator_user/get_event', (request, response) => {
   try{
-    const verification = eventService.GetEvent(request.params.id, request.params.id_creator_user)
+    const verification = eventService.GetEvent(3, 1)
     return response.json(verification)
   }catch(error){
     console.log("error")
