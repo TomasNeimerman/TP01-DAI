@@ -1,5 +1,7 @@
-import Bd from "../repositories/event-repositories.js"
-export class EventService {
+import BD from "../repositories/event-repositories.js";
+const Bd = new BD();
+
+export default class EventService {
   getAllEvent(pageSize, requestedPage) {
     try {
         
@@ -33,13 +35,12 @@ export class EventService {
             }
         }));
         return{
-            collection: events,
-            pagination: {                
+            pagination: {
                 limit: pageSize,
                 offset: requestedPage,
-                nextPage: `http://localhost:3000/event?limit=${pageSize}&offset=${requestedPage + 1}`
-                
-            },
+                nextPage: ((parsedOffset + 1) * parsedLimit <= totalCount) ? `${process.env.BASE_URL}/${path}?limit=${parsedLimit}&offset=${parsedOffset + 1}${(eventName) ? `&eventName=${eventName}` : null}${(eventCategory) ? `&eventCategory=${eventCategory}` : null} ${(eventDate) ? `&eventDate=${eventDate}` : null}${(eventTag) ? `&eventTag=${eventTag}` : null}` : null,
+                total: totalCount,
+                }
         };
     } catch (error) {
         console.error('Error al obtener la lista de eventos:', error);
@@ -103,7 +104,7 @@ export class EventService {
 
 EditEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
     try{
-        Bd.Query4(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
+        BD.Query4(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
         return("Succesfuly edited")
     } catch(error){
         console.log("Error edicion de evento");
@@ -120,13 +121,13 @@ DeleteEvent(id, id_creator_user){
     } catch(error){
         console.log("Error borrado de evento");
         return response.json("Error borrado de evento");
-    }
+    }   
 }
 
 InsciptEvent(id_event, id_user) {
     
     try{
-        Bd.Query6(id_user,id_event);
+        BD.Query6(id_user,id_event);
         return("saved")
     } catch(error){
         console.log("error");

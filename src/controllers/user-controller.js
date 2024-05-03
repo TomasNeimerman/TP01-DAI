@@ -1,8 +1,6 @@
-import express, { response } from "express";
-import {UserService} from "../servicios/user-service.js/"
-const router = express.Router();
-const userService = new UserService();
-
+import express from "express"
+import userService from "../servicios/user-service.js";
+const router = express.Router()
 
 router.get("/:id/enrollment", (request, response) => {
     const first_name = request.query.fisrt_name

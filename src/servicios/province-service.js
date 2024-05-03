@@ -1,10 +1,11 @@
-import Bd from "../repositories/provinces-repositories";
+import BD from "../repositories/provinces-repositories.js";
 
-export class ProvinceService {
+
+export default class ProvinceService {
     CreateProvince(id, name, full_name, latitude, longitude, display_order){
         
         try{
-            Bd.Query1(id, name, full_name, latitude, longitude, display_order)
+            BD.Query1(id, name, full_name, latitude, longitude, display_order)
             return("Succesfuly created")
         }catch{
             console.log("Error");
@@ -14,7 +15,7 @@ export class ProvinceService {
     EditProvince(id, name, full_name, latitude, longitude, display_order){
         
         try{
-            Bd.Query2(id, name, full_name, latitude, longitude, display_order)
+            BD.Query2(id, name, full_name, latitude, longitude, display_order)
             return("Edited Succesfuly")
         }catch{
             console.log("error");
@@ -24,7 +25,7 @@ export class ProvinceService {
     DeleteProvince(id){
         
         try{
-            Bd.Query3(id)
+            BD.Query3(id)
             return("Succesfuly Deleted")
         }catch(error){
             console.log("Error")
@@ -34,7 +35,7 @@ export class ProvinceService {
     GetProvince(id){
         
         try{
-            Bd.Query4(id)
+            BD.Query4(id)
             return("succesfull")
         }catch(error){
             console.log("error")

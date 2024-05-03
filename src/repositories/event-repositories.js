@@ -1,11 +1,14 @@
-import pg from "pg";
-import { BDconfig } from "../../BD.js";
-import cli from "nodemon/lib/cli/index.js";
-
-const client = new pg.Client();
+import pg from 'pg';
+import { Bd_config } from './BD_Config.js';
+const client = new pg.Client(Bd_config);
 client.connect();
 
 export default class Bd{
+    constructor (){
+        const { Client } = pkg;
+        this.DBClient = new Client(Bd_config);
+        this.DBClient.connect();
+    }
     async Query1(pageSize,requestedPage) {
         const sql = `SELECT e.id, e.name AS event_name, e.description AS event_description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance, 
                     t.name AS tag_name, 

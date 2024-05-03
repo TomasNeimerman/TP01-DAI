@@ -1,9 +1,6 @@
-import express from "express";
-import {
-  EventService
-}from "../servicios/event-service.js/"
-const router = express.Router();
-const eventService = new EventService();
+import express from "express"
+import eventService from "../servicios/event-service.js"; 
+const router = express.Router()
 
 router.get("/", (request, response) => {
   const limit = request.query.limit;

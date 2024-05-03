@@ -1,10 +1,9 @@
-import pg from "pg";
-import { BDconfig } from "../../BD.js";
-
-const client = new pg.Client();
+import pg from 'pg';
+import { Bd_config } from './BD_Config.js';
+const client = new pg.Client(Bd_config);
 client.connect();
 
-export default class Bd{
+export default class BD{
     async Query1(id, firstName, lastName, username, attended, rating) {
         const sql = `
             SELECT 

@@ -1,7 +1,7 @@
-import express, { response } from "express";
-import {ProvinceService} from "../servicios/province-service.js/"
-const router = express.Router();
-const provinceService = new ProvinceService();
+import express from "express"
+import provinceService from "../servicios/province-service.js";
+const router = express.Router()
+
 router.post("/create_province", (request,response) => {
     const id = 2
     const name = "Cordoba"
