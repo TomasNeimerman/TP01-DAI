@@ -1,9 +1,11 @@
 import pg from 'pg';
 import { Bd_config } from './BD_Config.js';
-const client = new pg.Client(Bd_config);
-client.connect();
-
 export default class BD{
+    constructor (){
+        const { Client } = pg;
+        this.DBClient = new Client(Bd_config);
+        this.DBClient.connect();
+    }
     async Query1(id, firstName, lastName, username, attended, rating) {
         const sql = `
             SELECT 

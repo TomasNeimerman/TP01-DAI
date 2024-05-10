@@ -3,12 +3,12 @@ import provinceService from "../servicios/province-service.js";
 const router = express.Router()
 
 router.post("/create_province", (request,response) => {
-    const id = 2
-    const name = "Cordoba"
-    const full_name = "Cordoba"
-    const latitude = "0.0"
-    const longitude = "5000.00"
-    const display_order = "2"
+    const id = request.id
+    const name = request.name
+    const full_name = request.full_name
+    const latitude = request.latitude
+    const longitude = request.longitude
+    const display_order = request.display_order
     try{
         const verification = provinceService.CreateProvince(id,name,full_name,latitude,longitude,display_order)
         return response.json(verification)

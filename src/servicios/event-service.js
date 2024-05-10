@@ -1,40 +1,38 @@
 import BD from "../repositories/event-repositories.js";
-const Bd = new BD();
+const bd = new BD();
 
-export default class EventService {
-  getAllEvent(pageSize, requestedPage) {
-    try {
-        
-        const result = Bd.query1(pageSize,requestedPage);
-        const events = result.map(row => ({
-            id: 1,
-            name: "evento1",
-            description: "hola",
-            start_date: "05-23-2024",
-            duration_in_minutes: 300,
-            price: 15000,
-            max_assistance: 300,
-            tags: "fiesta",
-            creator_user: {
-                id: 1,
-                username: "neotictom",
-                first_name: "neotic",
-                last_name: "tom"
-            },
-            category: {
-                id: 1,
-                name: "fiesta"
-            },
-            location: {
-                id: 1,
-                name: "caba",
-                full_address: "Capital federal, Provincia de Buenos Aires, Argentina",
-                latitude: 24.489102301273,
-                longitude: 64.31237812387,
-                max_capacity: 300
-            }
-        }));
+export default class EventService{ 
+  async getAllEvent(pageSize, requestedPage) {
+        const result = await bd.query1(pageSize,requestedPage);
+        var event = new Object();
+        var creator_user = new Object();
+        var event_categories  = new Object();
+        var event_location = new Object();
+        events = result.map(row => {
+            event.id = row.id
+            event.name = row.name
+            event.description = row.description
+            event.start_date = row.start_date
+            event.duration_in_minutes = row.duration_in_minutes
+            event.price = row.price
+            event.enabled_for_enrollment = row.enabled_for_enrollment
+            event.max_assistance = row.max_assistance
+            event.tags = row.tags_name
+            creator_user.id = row.user_id
+            creator_user.username = row.username
+            creator_user.first_name = row.first_name
+            creator_user.last_name = row.last_name
+            event_categories.id = row.eventcat_id
+            event_categories.name = row.eventcat_name
+            event_location.id = row.el_id
+            event_location.name = row.el_name
+            event_location.full_address = row.full_address
+            event_location.latitude = row.latitude
+            event_location.longitude = row.longitude
+            event_location.max_capacity = row.max_assistance
+        })
         return{
+            collection: events,
             pagination: {
                 limit: pageSize,
                 offset: requestedPage,
@@ -44,9 +42,8 @@ export default class EventService {
         };
     } catch (error) {
         console.error('Error al obtener la lista de eventos:', error);
-        throw new Error('Error interno del servidor');
-    }
-  };
+        throw new Error('Error interno del servidor');}
+ 
   SearchEvents(name,category,startDate,tag){
       var query = "SELECT * FROM event WHERE";
       if(name != null){
@@ -63,10 +60,10 @@ export default class EventService {
     }
     EventDetail(id) {
      
-      const result = Bd.Query2(id);
+      const result = bd.query2(id);
       const SavedData = result.map(row => ({
           event: {
-            "event": {
+            event: {
               "id": 2,
               "name": "navidad",
               "description": "descripcion",
@@ -93,7 +90,7 @@ export default class EventService {
   }
   CreateEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
     try{
-        Bd.Query3(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
+        bd.query3(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
         return("Succesfuly created")
     } catch(error){
         console.log("Error creacion de evento");
@@ -104,7 +101,7 @@ export default class EventService {
 
 EditEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
     try{
-        BD.Query4(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
+        bd.query4(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
         return("Succesfuly edited")
     } catch(error){
         console.log("Error edicion de evento");
@@ -116,7 +113,7 @@ EditEvent(id, name, description, id_event_category, id_event_location, start_dat
 DeleteEvent(id, id_creator_user){
     
     try{
-        Bd.Query5(id,id_creator_user)
+        bd.query5(id,id_creator_user)
         return("Succesfuly deleted")
     } catch(error){
         console.log("Error borrado de evento");
@@ -127,7 +124,7 @@ DeleteEvent(id, id_creator_user){
 InsciptEvent(id_event, id_user) {
     
     try{
-        BD.Query6(id_user,id_event);
+        bd.query6(id_user,id_event);
         return("saved")
     } catch(error){
         console.log("error");
@@ -138,7 +135,7 @@ GiveRating(eventId, userId, rating, feedback) {
     
     
     try{
-        Bd.Query7(eventId,userId,rating,feedback);
+        bd.query7(eventId,userId,rating,feedback);
         return("saved")
     } catch(error){
         console.log("error");

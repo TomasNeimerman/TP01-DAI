@@ -1,28 +1,31 @@
 import express from "express"
-import eventService from "../servicios/event-service.js"; 
-const router = express.Router()
+import EventService from "../servicios/event-service.js";
+const eventService = new EventService();
+const router = express.Router() 
 
-router.get("/", (request, response) => {
+router.get("/",async (request, response) => {
   const limit = request.query.limit;
   const offset = request.query.offset;
-  if(limit != null && offset != null){
+  const url = request.originalUrl;
+  //if(limit != null && offset != null){
   try {
-    const allEvents = eventService.getAllEvents(pageSize, page);
+    const allEvents = eventService.getAllEvent(limit, offset,url);
     return response.json(allEvents);
-  } catch (error) {
+  } catch (error){
     console.log("ErrorEj2");
     return response.json("ErrorEj2");
   }
-  }
+  /*}
   else{
     console.log("ENDPOINT ERROR")
-}
+}*/
 })
+
 router.get("/", (request,response) => {
-  const name = "evento1";
-  const category = "hola";
-  const startDate = "05-23-2024";
-  const tag = "fiesta";  
+  const name = request.query.name;
+  const category = request.query.category;
+  const startDate = request.query.startDate;
+  const tag = request.query;  
     if(limit != null && offset != null){
     try{
       var BusquedaEvento = eventService.SearchEvents(name,category,startDate,tag)
