@@ -1,24 +1,19 @@
-import express from "express"
+import {Router} from "express";
 import EventService from "../servicios/event-service.js";
 const eventService = new EventService();
-const router = express.Router() 
+const router = Router() 
 
-router.get("/",async (request, response) => {
+router.get("/", async (request, response) => {
   const limit = request.query.limit;
   const offset = request.query.offset;
   const url = request.originalUrl;
-  //if(limit != null && offset != null){
   try {
-    const allEvents = eventService.getAllEvent(limit, offset,url);
+    const allEvents = await eventService.getAllEvent(limit, offset, url);
     return response.json(allEvents);
-  } catch (error){
-    console.log("ErrorEj2");
-    return response.json("ErrorEj2");
+  } catch (error) {
+    console.log("ErrorEj2:", error);
+    return response.status(500).json({ error: "Internal server error" });
   }
-  /*}
-  else{
-    console.log("ENDPOINT ERROR")
-}*/
 })
 
 router.get("/", (request,response) => {

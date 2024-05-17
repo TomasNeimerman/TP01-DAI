@@ -1,63 +1,108 @@
 import BD from "../repositories/event-repositories.js";
 const bd = new BD();
 
-export default class EventService{ 
-  async getAllEvent(pageSize, requestedPage) {
-        const result = await bd.query1(pageSize,requestedPage);
+export default class EventService {
+    
+    parsedOffset(offset){
+        return !isNaN(parseInt(offset)) ? parseInt(offset) : 0;
+    }
+
+    parsedLimit(limit){
+        return !isNaN(parseInt(limit)) ? parseInt(limit) : 15; 
+    }
+    async getAllEvent(pageSize, requestedPage) {
+        try {
+            const result = await bd.query1(pageSize, requestedPage);
+            const resultDb = result.rows.map(row => {
+                const event = {
+                    id: row.id,
+                    name: row.name,
+                    description: row.description,
+                    start_date: row.start_date,
+                    duration_in_minutes: row.duration_in_minutes,
+                    price: row.price,
+                    enabled_for_enrollment: row.enabled_for_enrollment,
+                    max_assistance: row.max_assistance,
+                    tags: row.tags_name
+                };
+                const creator_user = {
+                    id: row.user_id,
+                    username: row.username,
+                    first_name: row.first_name,
+                    last_name: row.last_name
+                };
+                const event_categories = {
+                    id: row.eventcat_id,
+                    name: row.eventcat_name
+                };
+                const event_location = {
+                    id: row.el_id,
+                    name: row.el_name,
+                    full_address: row.full_address,
+                    latitude: row.latitude,
+                    longitude: row.longitude,
+                    max_capacity: row.max_capacity
+                };
+                return {
+                    event: event,
+                    creator_user: creator_user,
+                    event_categories: event_categories,
+                    event_location: event_location
+                };
+            });
+            return {
+                collection: resultDb,
+                pagination: {
+                    limit: pageSize,
+                    offset: requestedPage,
+                    nextPage: ((parsedOffset + 1) * parsedLimit <= totalCount) ? `${process.env.BASE_URL}/${path}?limit=${parsedLimit}&offset=${parsedOffset + 1}${(eventName) ? `&eventName=${eventName}` : ''}${(eventCategory) ? `&eventCategory=${eventCategory}` : ''} ${(eventDate) ? `&eventDate=${eventDate}` : ''}${(eventTag) ? `&eventTag=${eventTag}` : ''}` : null,
+                    total: totalCount
+                }
+            };
+        } catch (error) {
+            console.error('Error al obtener la lista de eventos:', error);
+            throw new Error('Error interno del servidor');
+        }
+    }
+
+  async SearchEvents(name,category,startDate,tag){
+    const result = await bd.query2(name, category, startDate, tag); 
+    console.log(result)
+    const resultDb = result.map(row => {
         var event = new Object();
         var creator_user = new Object();
         var event_categories  = new Object();
         var event_location = new Object();
-        events = result.map(row => {
-            event.id = row.id
-            event.name = row.name
-            event.description = row.description
-            event.start_date = row.start_date
-            event.duration_in_minutes = row.duration_in_minutes
-            event.price = row.price
-            event.enabled_for_enrollment = row.enabled_for_enrollment
-            event.max_assistance = row.max_assistance
-            event.tags = row.tags_name
-            creator_user.id = row.user_id
-            creator_user.username = row.username
-            creator_user.first_name = row.first_name
-            creator_user.last_name = row.last_name
-            event_categories.id = row.eventcat_id
-            event_categories.name = row.eventcat_name
-            event_location.id = row.el_id
-            event_location.name = row.el_name
-            event_location.full_address = row.full_address
-            event_location.latitude = row.latitude
-            event_location.longitude = row.longitude
-            event_location.max_capacity = row.max_assistance
-        })
+        event.id = row.id
+        event.name = row.name
+        event.description = row.description
+        event.start_date = row.start_date
+        event.duration_in_minutes = row.duration_in_minutes
+        event.price = row.price
+        event.enabled_for_enrollment = row.enabled_for_enrollment
+        event.max_assistance = row.max_assistance
+        creator_user.id = row.user_id
+        creator_user.username = row.username
+        creator_user.first_name = row.first_name
+        creator_user.last_name = row.last_name
+        event_categories.id = row.eventcat_id
+        event_categories.name = row.eventcat_name
+        event_location.id = row.e_id
+        event_location.name = row.e_name
+        event_location.full_address = row.full_address
+        event_location.latitude = row.latitude
+        event_location.longitude = row.longitude
+        event_location.max_capacity = row.max_assistance
         return{
-            collection: events,
-            pagination: {
-                limit: pageSize,
-                offset: requestedPage,
-                nextPage: ((parsedOffset + 1) * parsedLimit <= totalCount) ? `${process.env.BASE_URL}/${path}?limit=${parsedLimit}&offset=${parsedOffset + 1}${(eventName) ? `&eventName=${eventName}` : null}${(eventCategory) ? `&eventCategory=${eventCategory}` : null} ${(eventDate) ? `&eventDate=${eventDate}` : null}${(eventTag) ? `&eventTag=${eventTag}` : null}` : null,
-                total: totalCount,
-                }
-        };
-    } catch (error) {
-        console.error('Error al obtener la lista de eventos:', error);
-        throw new Error('Error interno del servidor');}
- 
-  SearchEvents(name,category,startDate,tag){
-      var query = "SELECT * FROM event WHERE";
-      if(name != null){
-        query = query + "name =" + name + "AND";      
-      }else if(category != null){
-        query += "category =" + category + "AND"; 
-      }
-      else if(startDate != null){
-        query += "startDate = " + startDate + "AND";
-      }else if(tag != null){
-        query += "tag =" + tag+ "AND";
-      }
-      return query;
-    }
+            event: event,
+            creator_user: creator_user,
+            event_categories: event_categories,
+            event_location: event_location,
+            tags: row.tags
+        }
+    })
+    return(resultDb)
+}
     EventDetail(id) {
      
       const result = bd.query2(id);

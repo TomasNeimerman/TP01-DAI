@@ -8,31 +8,37 @@ export default class BD{
         this.client.connect();
     }
         async query1(pageSize,requestedPage) {
-        if (pageSize) validaciones.push(`limit ${pageSize}`)
-        if (requestedPage) validaciones.push(`offset ${requestedPage}`)
-        const sql = `SELECT e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance, t.name as tags_name, u.id as user_id, u.username, u.first_name, u.last_name, ec.id as eventcat_id, ec.name as eventcat_id, el.id as el_id, el.name as el_name, el.full_address, el.latitude, el.longitude, el.max_capacity    
+        const validations = []
+        if (pageSize) validations.push(`limit ${pageSize}`)
+        if (requestedPage) validations.push(`offset ${requestedPage}`)
+        const sql = `SELECT e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance, t.name as tags_name, u.id as user_id, u.username, u.first_name, u.last_name, ec.id as event_id, ec.name as eventcat_id, el.id as el_id, el.name as el_name, el.full_address, el.latitude, el.longitude, el.max_capacity    
         FROM events e    
         JOIN users u ON e.id_creator_user = u.id
         JOIN event_categories ec ON e.id_event_category = ec.id
         JOIN event_tags et ON e.id = et.id_event
         JOIN tags t ON et.id_tag = t.id
         JOIN event_locations el ON e.id_event_location = el.id limit  ${pageSize} offset ${requestedPage}`;
-        const respuesta =  this.client.query(sql);
+        const respuesta =  await this.client.query(sql);
         return respuesta;
     }
-    async query2(id){
-        const sql = `
-        SELECT 
-            e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance,
-            el.id AS location_id, el.name AS location_name, el.full_address, el.longitude, el.latitude, el.max_capacity
-        FROM 
-            event e
-        JOIN 
-            event_locations el ON e.id_event_locations = el.id
-        WHERE 
-            e.id = ${id}`;
+    async query2(name, category, startDate, tag){
+        const sql =
+        `SELECT e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance, u.id as user_id, u.username, u.first_name, u.last_name, ec.id as eventcat_id, ec.name as eventcat_name, el.id as el_id, el.name as el_name, el.full_address, el.latitude, el.longitude, el.max_capacity, 
+            array( select json_build_object(
+            'id', tags.id,
+            'name', tags.name
+            )FROM tags ) as tags
+            FROM events e    
+            JOIN users u ON e.id_creator_user = u.id
+            INNER JOIN event_categories ec ON e.id_event_category = ec.id
+            JOIN event_locations el ON e.id_event_location = el.id
+            INNER JOIN event_tags et ON e.id = et.id_event
+            JOIN tags t ON et.id_tag = t.id
+            WHERE et.id_tag = t.id
+        ${variables.length > 0 ?  ` AND ${validaciones.join(' AND ')}` : null}`;
+        const groupby = ` group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15`
         const respuesta = await client.query(sql);
-        return respuesta;
+        return respuesta + groupby;
 
     }
     async query3(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){

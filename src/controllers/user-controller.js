@@ -3,11 +3,11 @@ import userService from "../servicios/user-service.js";
 const router = express.Router()
 
 router.get("/:id/enrollment", (request, response) => {
-    const first_name = request.query.fisrt_name
-    const last_name = request.query.last_name
-    const username = request.query.username
-    const attended = request.query.attended
-    const rating = request.query.rating
+    const first_name = request.body.fisrt_name
+    const last_name = request.body.last_name
+    const username = request.body.username
+    const attended = request.body.attended
+    const rating = request.body.rating
     try{
         const BusquedaUsuario = userService.GetAllUsers(first_name, last_name, username, attended, rating)
         return response.json(BusquedaUsuario)

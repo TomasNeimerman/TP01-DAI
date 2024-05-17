@@ -1,21 +1,30 @@
 {
-  "name": "ev",
+  "name": "tp01-dai",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "dai-eventos",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js"
+    "test": "test",
+    "start": "node server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neotictom/TP01-DAI.git"
+  },
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neotictom/TP01-DAI/issues"
+  },
+  "homepage": "https://github.com/neotictom/TP01-DAI#readme",
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "exrpess": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.0",
     "pg": "^8.11.5",
-    "pg-protocol": "^1.6.1",
     "pkg": "^5.8.1"
   }
 }
+
