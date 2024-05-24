@@ -1,6 +1,25 @@
 import BD from "../repositories/user-repositories.js"
+const bd = new BD();
 
 export default class UserService {
+
+    async autenticarUsuario(username, password) {
+        const sql = `
+            SELECT *
+            FROM users
+            WHERE username = $1 AND password = $2
+        `;
+        const values = [username, password];
+        try {
+            const rta = await bd.Consulta(sql, values);
+            return rta.rows[0]; 
+        } catch (error) {
+            throw new Error("Error al autenticar usuario: " + error.message);
+        }
+    }
+    
+
+
     GetAllUsers(id, firstName, lastName, username, attended, rating) {
         const result = BD.Query1(id, username, firstName, lastName, attended, rating);
         const SavedData = result.map(row => ({

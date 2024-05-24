@@ -10,8 +10,8 @@ const port = 3600;
 
 app.use("/event", EventController);
 app.use("/user", UserController);
-app.use("/provincia", ProvincesController);
+app.use("/province", ProvincesController);
 
 app.listen(port, () =>{
-    console.log("Server working")
+    console.log(`Server running on port ${port}`)
 })

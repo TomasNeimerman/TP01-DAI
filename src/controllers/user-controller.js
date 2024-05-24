@@ -1,35 +1,25 @@
 import express from "express"
-import userService from "../servicios/user-service.js";
-const router = express.Router()
+import UsuarioServicios from "../servicios/user-service.js";
 
-router.get("/:id/enrollment", (request, response) => {
-    const first_name = request.body.fisrt_name
-    const last_name = request.body.last_name
-    const username = request.body.username
-    const attended = request.body.attended
-    const rating = request.body.rating
-    try{
-        const BusquedaUsuario = userService.GetAllUsers(first_name, last_name, username, attended, rating)
-        return response.json(BusquedaUsuario)
-    }catch(error){
-        console.log("Ej 5")
-        return response.json("Ej 5")
-    }
+const router = express.Router();
+const userService = new UsuarioServicios();
 
-})
-router.post('/user/login', (request, response) => {
-    const username = "pepitogamer"
-    const password = "abc123"
+router.post("/login", async (request, response) => {
+    const { username, password } = request.body;
     try {
-        const autenticarUsuario = userService.LoginUser(username, password);
-        return response.json(autenticarUsuario);
+        const usuario = await userService.autenticarUsuario(username, password);
+        if (!usuario) {
+            return response.status(401).json({ error: 'Credenciales inválidas' });
+        }
+        return response.json(usuario);
     } catch (error) {
         console.error('Error en la autenticación del usuario:', error);
-        return response.status(500).json({ error: 'Error en el servidor' });
+        return response.status(500).json({ error: 'Error en el servidor: ' + error.message });
     }
 });
 
-router.post('/user/register', (request, response) => {
+
+router.post("/register", (request, response) => {
     const { first_name, last_name, username, password } = request.body;
     try {
         const autenticarRegistro = userService.RegisterUser(first_name, last_name, username, password);
