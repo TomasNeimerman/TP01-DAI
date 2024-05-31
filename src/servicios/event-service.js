@@ -46,8 +46,8 @@ export default class EventService {
                 event_location: event_location,
                 tags: row.tags,
                 pagination: {
-                    limit: pageSize,
-                    offset: requestedPage,
+                    limit: pageSizes,
+                    offset: requestedPages,
                     nextPage: ((requestedPages + 1) * pageSizes <= totalCount) ? `${process.env.BASE_URL}/${path}?limit=${pageSizes}&offset=${requestedPages + 1}` : null,
                     total: totalCount,   
                 }
@@ -58,7 +58,6 @@ export default class EventService {
 
     async searchEvents(name, category, startDate, tag, path){
         const answer = await bd.query2(name, category, startDate, tag)
-        const totalCount = answer.length
         const dateBD = answer.map(row => {
             var event = new Object();
             var creator_user = new Object();
@@ -134,20 +133,28 @@ export default class EventService {
     }
 
     async peopleList(id, first_name, last_name, username, attended, rating){
+        console.log(entro)
         const answer = bd.query4(id, first_name, last_name, username, attended, rating)
         var user = new Object();
         dateBD = answer.map(row => {
-            user.id = row.id
-            user.username = row.username
+            user.id = row.user_id
             user.first_name = row.first_name
             user.last_name = row.last_name
-            attended = row.ee.attended
-            rating = row.ee.rating 
-            description = row.ee.description 
-        }) 
+            user.username = row.username
+            enrollment.id = row.id
+            enrollment.id_event = row.id_event
+            enrollment.id_user = row.id_user
+            enrollment.description = row.description
+            enrollment.registration_date_time = row.registration_date_time
+            enrollment.attended = row.attended
+            enrollment.observations = row.observations
+            enrollment.rating = row.rating          
         return{
-            collection: dateBD,
-        };
+            enrollment: enrollment,
+                user: user
+        }
+        }) 
+        return dateBD;
     }
 
     async createEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
@@ -188,6 +195,11 @@ export default class EventService {
             console.log(error);
             return response.json(error);
         }
+      }
+      async rating(id, rating) {
+
+        await repo.query9(rating,id)
+        return "rating updated";
       }
 }  
 

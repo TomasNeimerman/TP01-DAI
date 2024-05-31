@@ -12,7 +12,6 @@ router.get("/",  async (request, response) => {
   const startDate = request.query.startDate;
   const tag = request.query.tag;
   const url = request.originalUrl;
-  if(limit != null || offset != null){
       try {
           const getAllEvent = await eventService.getAllEvent(limit, offset, url);
           return response.json(getAllEvent);
@@ -20,10 +19,10 @@ router.get("/",  async (request, response) => {
           console.log("Error ej2 controller");
           return response.json("Error ej2 controller");
       }
-  }else if(name != null || category != null || startDate != null || tag != null){
+    if(name != null || category != null || startDate != null || tag != null){
       try {
-          const BusquedaEvent = await eventService.searchEvents(name, category, startDate, tag);
-          return response.json(BusquedaEvent);
+          const searchEvents = await eventService.searchEvents(name, category, startDate, tag);
+          return response.json(searchEvents);
       } catch(error){
           console.log(error)
           return response.json(error)
@@ -46,19 +45,20 @@ router.get("/:id", (request, response) => {
 })
 
 router.get("/:id/enrollment", async(request, respose) => {
-  const first_name = request.body.first_name
-  const last_name = request.body.last_name
-  const username = request.body.username
-  const attended = request.body.attended
-  const rating = request.body.rating
+  const first_name = request.query.first_name
+  const last_name = request.query.last_name
+  const username = request.query.username
+  const attended = request.query.attended
+  const rating = request.query.rating
   if(first_name != null || last_name != null || username != null || attended != attended || attended != null || rating != null){
       try{
           const user = await eventService.peopleList(request.params.id, first_name, last_name, username, attended, rating)
+          console.log(user)
           if(user){
               return respose.json(user)
           } else{
-              console.log("Error ejercicio 5 controller")
-              return respose.json("No se encontro al usuario")
+              console.log("Error ejercicio 5 ")
+              return respose.json(" user not found")
           }
       }catch(error){
 
@@ -122,21 +122,34 @@ router.delete("/:id", (request, response) => {
   }
 })
 
-router.post("/:id/enrollment" , async (req, res) => {
+router.post("/:id/enrollment" , async (request, response) => {
   const enrollment = {};
 
-  enrollment.idEvent = req.params.id;
-  enrollment.attended = req.query.attended;
-  enrollment.rating = req.query.rating;
-  enrollment.descripcion = req.query.descripcion;
-  enrollment.observations = req.query.observations;
+  enrollment.idEvent = request.params.id;
+  enrollment.attended = request.query.attended;
+  enrollment.rating = request.query.rating;
+  enrollment.descripcion = request.query.descripcion;
+  enrollment.observations = request.query.observations;
   try {
     const card = await eventService.eventInscription(enrollment);
-    return res.json(card);
+    return response.json(card);
   } catch (error) {
     console.log(error);
-    return res.json(error);
+    return response.json(error);
   }
-});
+})
+
+router.patch("/:id/enrollment",async (request, response) => {
+    const idEvento = request.params.id;
+    const rating = request.query.rating;
+    try {
+      const mensaje = await eventService.rating(idEvento, rating);
+      console.log(mensaje);
+      return response.status(200).send(mensaje);
+    } catch (error) {
+      console.log(error);
+      return response.json(error);
+    }
+  });
 
 export default router;

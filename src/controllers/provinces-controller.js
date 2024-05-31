@@ -1,31 +1,47 @@
-import express from "express";
+import {Router} from "express";
 import ProvinceService from "../servicios/province-service.js";
-const router = express.Router();
+const router = Router();
 const provService = new ProvinceService()
 
 router.get("/", async (request, response) => {
-    const id = request.query.id;
-    const limit = parseInt(request.query.limit, 10) || 10;
-    const offset = parseInt(request.query.offset, 10) || 1;
+  const id = request.query.id;
+  const limit = request.query.limit;
+  const offset = request.query.offset;
 
-    if (limit || offset) {
+    if (limit!=null && offset!=null) {
         try {
-            const verification = await provService.GetProvince(limit, offset);
-            return response.status(200).json(verification);
+            const allProvince = await provService.GetProvince(limit, offset,url);
+            console.log(allProvince)
+            return response.status(202).json(allProvince);
         } catch (error) {
             console.error("Error al buscar provincia", error);
             return response.status(500).json("Error al buscar provincia");
         }
-    } else if (id) {
+    } else if (id != null) {
         try {
-            const verification = await ProvinceService.GetProvinceById(id);
-            return response.status(200).json(verification);
+            const provinceById = await provService.getProvinceById(id);
+            return response.status(202).json(provinceById);
         } catch (error) {
             console.error("No se encontró la provincia", error);
             return response.status(404).json("No se encontró la provincia");
         }
-    } else {
+    }
+    else {
         return response.status(400).json("No se obtuvo nada");
+    }
+});
+router.get("/:id/locations", async (request, response) => {
+    const id = request.params.id;
+
+    try {
+        const locations = await provService.GetLocationsByProvinceId(id);
+        if (locations.length === 0) {
+            return response.status(404).json("No se encontraron ubicaciones para la provincia proporcionada");
+        }
+        return response.status(200).json(locations);
+    } catch (error) {
+        console.error("Error al buscar las ubicaciones", error);
+        return response.status(500).json("Error al buscar las ubicaciones");
     }
 });
 router.post("/create_province", (request, response) => {
@@ -36,7 +52,7 @@ router.post("/create_province", (request, response) => {
   const longitude = request.longitude;
   const display_order = request.display_order;
   try {
-    const verification = ProvinceService.CreateProvince(
+    const verification = provService.CreateProvince(
       id,
       name,
       full_name,
@@ -44,10 +60,10 @@ router.post("/create_province", (request, response) => {
       longitude,
       display_order
     );
-    return response.json(verification);
+    return response.status(201).json(verification);
   } catch (error) {
     console.log("error al crear provincia");
-    return response.json("error al crear provincia");
+    return response.status(400).json("error al crear provincia");
   }
 });
 router.post("/:id/edition_province", (request, response) => {

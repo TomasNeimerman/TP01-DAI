@@ -7,7 +7,7 @@ export default class BD{
         this.client = new Client(Bd_config);
         this.client.connect();
     }
-    async quary1(pageSize, requestedPage) {
+    async query1(pageSize, requestedPage) {
         const validations = []
         if (pageSize) validations.push(`limit ${pageSize}`)
         if (requestedPage) validations.push(`offset ${requestedPage}`)
@@ -118,12 +118,10 @@ export default class BD{
     }
 
     async query4(id, first_name, last_name, username, attended, rating){
-        const sql = `SELECT u.id, u.username, u.first_name, u.last_name, ee.attended, ee.rating, ee.description 
-        FROM users 
-        JOIN event_enrollments ee ON u.id = ee.id_user
-        WHERE u.id = '${id}' AND u.username = '${username}' AND u.first_name = '${first_name}' AND u.last_name = '${last_name}' AND ee.attended = '${attended}' AND ee.rating = '${rating}'`
+        const sql = `select en.id, en.id_event, en.id_user, en.description, en.registration_date_time, en.attended, en.observations, en.rating, u.id as user_id, u.first_name, u.last_name, u.username
+        FROM event_enrollments en JOIN users u ON en.id_user = u.id`
         const answer = await this.client.query(sql);
-        return answer
+        return answer.rows
     }
 
     async query5(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
@@ -146,6 +144,7 @@ export default class BD{
         const answer = await this.client.query(sql);
         return answer
     }
+ 
     async query8(enrollment) {
         try {
           if (enrollment.enabled) {
@@ -158,4 +157,15 @@ export default class BD{
           console.log(error);
         }
       }
+
+      async query9(rating,id) {
+        try {
+          const sql = `UPDATE event_enrollments SET rating=$1 WHERE id=$2`;
+          const values = [rating,id];
+          await this.client.query(sql, values);
+    
+        } catch (error) {
+          console.log(error);
+        }
+      } 
 }   
