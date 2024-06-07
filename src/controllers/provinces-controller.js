@@ -5,46 +5,37 @@ const provService = new ProvinceService()
 
 router.get("/", async (request, response) => {
   const id = request.query.id;
-  const limit = request.query.limit;
-  const offset = request.query.offset;
-
-    if (limit!=null && offset!=null) {
-        try {
-            const allProvince = await provService.GetProvince(limit, offset,url);
-            console.log(allProvince)
-            return response.status(202).json(allProvince);
-        } catch (error) {
-            console.error("Error al buscar provincia", error);
-            return response.status(500).json("Error al buscar provincia");
-        }
-    } else if (id != null) {
-        try {
-            const provinceById = await provService.getProvinceById(id);
-            return response.status(202).json(provinceById);
-        } catch (error) {
-            console.error("No se encontró la provincia", error);
-            return response.status(404).json("No se encontró la provincia");
-        }
-    }
-    else {
-        return response.status(400).json("No se obtuvo nada");
-    }
-});
-router.get("/:id/locations", async (request, response) => {
-    const id = request.params.id;
-
+  const locations = request.query.locations
     try {
-        const locations = await provService.GetLocationsByProvinceId(id);
-        if (locations.length === 0) {
-            return response.status(404).json("No se encontraron ubicaciones para la provincia proporcionada");
+      const allProvinces = await provService.getProvince();
+      if(id != null){
+        try{
+          const provId = await provService.getProvinceById(id);
+          if(locations != null){
+            try{
+              const location = await provService.getLocationsByProvinceId(id);
+              return response.json(location);
+            }catch{
+              console.error("Error al encontrar las localidades", error);
+              return response.status(401)("No se encontraron las localidades")
+            }
+          }
+          console.log(provId)
+          return response.json(provId)
+        }catch{
+          console.error("Error al buscar la provincia", error);
+          return response.status(404)("No se encontro la provincia")
         }
-        return response.status(200).json(locations);
-    } catch (error) {
-        console.error("Error al buscar las ubicaciones", error);
-        return response.status(500).json("Error al buscar las ubicaciones");
+      }
+      return response.json(allProvinces);
+    }catch (error) {
+            console.error("Error al buscar provincia", error);
+            return response.status(500)("Error al buscar provincia");
     }
+      
 });
-router.post("/create_province", (request, response) => {
+
+router.post("/", (request, response) => {
   const id = request.id;
   const name = request.name;
   const full_name = request.full_name;

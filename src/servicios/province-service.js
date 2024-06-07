@@ -2,29 +2,23 @@ import BD from "../repositories/provinces-repositories.js";
 const bd = new BD();
 
 export default class ProvinceService {
-
-    async GetProvince(pageSize, requestedPage, path) {
-        const offset = (requestedPage - 1) * pageSize;
+    async getProvince() {
         const province = await bd.query4();
-        const paginatedProvinces = province.slice(offset, offset + pageSize);
-        const provArray = paginatedProvinces.map(row => ({
-            id: row.id,
-            name: row.name,
-            full_name: row.full_name,
-            latitude: row.latitude,
-            longitude: row.longitude,
-            display_order: row.display_order
-        }));
-    
-        return {
-            collection: provArray,
-            pagination: {
-                limit: pageSize,
-                offset: requestedPage,
-                nextPage: `${process.env.BASE_URL}/${path}?limit=${pageSize}&offset=${requestedPage + 1}`
-            }
-        };
+        const provArray = province.map((row) => {
+            var provinces = new Object()
+            provinces.id = row.id;
+            provinces.name = row.name;
+            provinces.full_name = row.full_name;
+            provinces.latitude = row.latitude;
+            provinces.longitude = row.longitude;
+            provinces.display_order = row.display_order;
+        return{
+            provinces:provinces
+        }
+    })
+    return provArray
     }
+
     async getProvinceById(id){
         const province = await bd.query5(id)
         const dateBd = province.map(row =>{ 
@@ -42,14 +36,20 @@ export default class ProvinceService {
     return dateBd;
     }
 
-    async GetLocationsByProvinceId(id) {
-        try {
-            const locations = await bd.queryLocationsByProvinceId(id);
-            return locations;
-        } catch (error) {
-            console.error("Error al buscar las ubicaciones", error);
-            throw error;
+    async getLocationsByProvinceId(id) {
+       const locations = await bd.query6(id)
+       const dateBd = locations.map(row =>{
+        const locationsO = new Object();
+        locationsO.id = row.id,
+        locationsO.name = row.name,
+        locationsO.id_province = row.id_province,
+        locationsO.latitude = row.latitude,
+        locationsO.longitude = row.longitude
+        return{
+            locations: locationsO,
         }
+       })
+       return dateBd;
     }
     CreateProvince(id, name, full_name, latitude, longitude, display_order){
         

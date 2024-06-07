@@ -14,23 +14,25 @@ router.get("/",  async (request, response) => {
   const url = request.originalUrl;
       try {
           const getAllEvent = await eventService.getAllEvent(limit, offset, url);
-          return response.json(getAllEvent);
+          
+          if(name != null || category != null || startDate != null || tag != null){
+            try {
+                const searchEvents = await eventService.searchEvents(name, category, startDate, tag);
+                return response.json(searchEvents);           
+                }catch(error){
+                console.log(error)
+                return response.json(error)
+                }
+              }else{
+                console.log("error endpoint /")
+                return response.json("Faltan variables para la busqueda")
+          }
+        return response.json(getAllEvent);
       }catch(error){
           console.log("Error ej2 controller");
           return response.json("Error ej2 controller");
       }
-    if(name != null || category != null || startDate != null || tag != null){
-      try {
-          const searchEvents = await eventService.searchEvents(name, category, startDate, tag);
-          return response.json(searchEvents);
-      } catch(error){
-          console.log(error)
-          return response.json(error)
-      }
-  }else{
-      console.log("error endpoint /")
-      return response.json("Faltan variables para la busqueda")
-  }
+    
   
 })
 

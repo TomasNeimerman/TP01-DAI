@@ -11,7 +11,7 @@ export default class BD{
         const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order,) VALUES ('${id}','${name}', '${full_name}', '${latitude}', '${longitude}', ${display_order})`;
         const values = [id,name,full_name,latitude,longitude,display_order];
         const respuesta = await this.client.query(sql);
-        await this.DBClient.query(sql, values);
+        await this.Client.query(sql, values);
         return respuesta;
         
     }
@@ -28,18 +28,22 @@ export default class BD{
     }
     async query4(){
         const sql = `SELECT * FROM PROVINCES`
-        const respuesta = await this.client.query(sql);
-        return respuesta.rows;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
     async query5(id) {
-        const sql = `SELECT * from provinces WHERE id = ${id}`
+        const sql = `SELECT * from provinces WHERE id = '${id}'`
         const answer = await this.client.query(sql);
         return answer.rows
     }
     
-    async query6(id){
-        const sql = `SELECT * FROM LOCATIONS WHERE id_province = '${id}'`;
-        const respuesta = await this.client.query(sql, [id]);
-        return respuesta.rows;
+    async query6(id) {
+        const sql = `SELECT * FROM locations WHERE id_province = '${id}'`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
+    
+    
+    
+    
 }
