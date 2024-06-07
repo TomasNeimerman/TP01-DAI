@@ -95,7 +95,8 @@ export default class EventService {
     }
 
      async eventDetail(id){
-        const answer = bd.query3(id)
+        const answer = await bd.query3(id);
+      
         const dateBD = answer.map(row => {
             var event = new Object();
             var creator_user = new Object();
@@ -129,14 +130,15 @@ export default class EventService {
                 tags: row.tags
             }
         })
+        console.log(dateBD);
         return dateBD;
     }
 
     async peopleList(id, first_name, last_name, username, attended, rating){
-        console.log(entro)
-        const answer = bd.query4(id, first_name, last_name, username, attended, rating)
-        var user = new Object();
-        dateBD = answer.map(row => {
+        const answer = await bd.query4(id, first_name, last_name, username, attended, rating)
+        const dateBD = answer.map(row => {
+            var user = new Object();
+            var enrollment = new Object();
             user.id = row.user_id
             user.first_name = row.first_name
             user.last_name = row.last_name

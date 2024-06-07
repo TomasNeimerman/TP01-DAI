@@ -14,37 +14,41 @@ router.get("/",  async (request, response) => {
   const url = request.originalUrl;
       try {
           const getAllEvent = await eventService.getAllEvent(limit, offset, url);
-          
           if(name != null || category != null || startDate != null || tag != null){
             try {
                 const searchEvents = await eventService.searchEvents(name, category, startDate, tag);
                 return response.json(searchEvents);           
-                }catch(error){
+                }
+            catch(error){
                 console.log(error)
                 return response.json(error)
-                }
-              }else{
-                console.log("error endpoint /")
-                return response.json("Faltan variables para la busqueda")
+            }
+
           }
-        return response.json(getAllEvent);
+          return response.json(getAllEvent);
       }catch(error){
-          console.log("Error ej2 controller");
+          console.log("Error ej2 controller", error);
           return response.json("Error ej2 controller");
       }
     
   
 })
 
-router.get("/:id", (request, response) => {
-  try {  
-      const event = eventService.eventDetail(request.params.id);
-      return response.json(even)
-  } catch(error){
-      console.log("Error ejercicio 4 controller")
-      return response.json("No se encontro evento")
+router.get("/:id", async (request, response) => {
+  const eventId = request.params.id;
+  try {
+    const event = await eventService.eventDetail(eventId);
+    if (event) {
+      return response.json(event);
+    } else {
+      return response.status(404).json({ message: "Evento no encontrado" });
+    }
+  } catch (error) {
+    console.log("Error en el controlador de eventos:", error);
+    return response.status(500).json({ error: "Error en el servidor" });
   }
-})
+});
+
 
 router.get("/:id/enrollment", async(request, respose) => {
   const first_name = request.query.first_name
@@ -63,7 +67,8 @@ router.get("/:id/enrollment", async(request, respose) => {
               return respose.json(" user not found")
           }
       }catch(error){
-
+        console.error("error", error);
+        console.reponse.status(404).json("not found")
       }
   }
 })
@@ -72,7 +77,7 @@ router.post("/:id", async(request, response) => {
   const name = request.body.name
   const description = request.body.description
   const id_event_category = request.body.id_event_category
-  const id_envet_location = request.body.id_event_location
+  const id_event_location = request.body.id_event_location
   const start_date = request.body.start_date
   const duration_in_minutes = request.body.duration_in_minutes
   const price = request.body.price
@@ -80,7 +85,7 @@ router.post("/:id", async(request, response) => {
   const max_assistance = request.body.max_assistance
   const id_creator_user = request.body.id_creator_user
   try{
-      const ok = await eventService.createEvent(request.params.id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
+      const ok = await eventService.createEvent(request.params.id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
       if(ok){
           return response.json(ok)
       } else{
