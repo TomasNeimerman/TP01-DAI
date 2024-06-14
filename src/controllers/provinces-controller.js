@@ -36,55 +36,41 @@ router.get("/", async (request, response) => {
 });
 
 router.post("/", (request, response) => {
-  const id = request.id;
-  const name = request.name;
-  const full_name = request.full_name;
-  const latitude = request.latitude;
-  const longitude = request.longitude;
-  const display_order = request.display_order;
+  const name = request.body.name;
+  const full_name = request.body.full_name;
+  const latitude = request.body.latitude;
+  const longitude = request.body.longitude;
+  const display_order = request.body.display_order;
   try {
-    const verification = provService.CreateProvince(
-      id,
-      name,
-      full_name,
-      latitude,
-      longitude,
-      display_order
-    );
-    return response.status(201).json(verification);
+    const verification = provService.CreateProvince(name,full_name,latitude,longitude,display_order);
+    return response.status(201).json("Created");
   } catch (error) {
-    console.log("error al crear provincia");
+    console.log("error al crear provincia",error);
     return response.status(400).json("error al crear provincia");
   }
 });
-router.post("/:id/edition_province", (request, response) => {
-  const id = request.query.id;
-  const name = request.query.name;
-  const full_name = request.query.full_name;
-  const latitude = request.query.latitude;
-  const longitude = request.query.longitude;
-  const display_order = request.query.display_order;
+router.put("/:id", (request, response) => {
+  const id = request.params.id;
+  const name = request.body.name;
+  const full_name = request.body.full_name;
+  const latitude = request.body.latitude;
+  const longitude = request.body.longitude;
+  const display_order = request.body.display_order;
   try {
-    const verification = ProvinceService.EditProvince(
-      id,
-      name,
-      full_name,
-      latitude,
-      longitude,
-      display_order
-    );
-    return response.json(verification);
-  } catch {
-    console.log("error al editar provincia");
+    const verification = provService.EditProvince(id,name,full_name,latitude,longitude,display_order);
+    return response.json("edited");
+  } catch(error) {
+    console.log("error al editar provincia",error);
     return response.json("error al editar provincia");
   }
 });
-router.delete("/:id/delete_event", (request, response) => {
+router.delete("/:id", (request, response) => {
+  const id = request.params.id
   try {
-    const verification = ProvinceService.DeleteProvince(2);
-    return response.json("Se borro correctamente la provincia");
-  } catch {
-    console.log("Error al borrar provincia");
+    const verification = provService.DeleteProvince(id);
+    return response.json("deleted");
+  } catch(error) {
+    console.log("Error al borrar provincia", error);
     return response.json("Error al borrar provincia");
   }
 });

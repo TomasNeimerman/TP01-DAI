@@ -158,6 +158,7 @@ export default class EventService {
         }) 
         return dateBD;
     }
+   
 
     async createEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
         try{

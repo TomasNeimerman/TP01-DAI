@@ -51,35 +51,14 @@ export default class ProvinceService {
        })
        return dateBd;
     }
-    CreateProvince(id, name, full_name, latitude, longitude, display_order){
-        
-        try{
-            BD.query1(id, name, full_name, latitude, longitude, display_order)
-            return("Succesfuly created")
-        }catch{
-            console.log("Error");
-            return response.json("Error");
-        }
+    CreateProvince(name, full_name, latitude, longitude, display_order){
+        return bd.query1(name, full_name, latitude, longitude, display_order)
     }
     EditProvince(id, name, full_name, latitude, longitude, display_order){
-        
-        try{
-            BD.query2(id, name, full_name, latitude, longitude, display_order)
-            return("Edited Succesfuly")
-        }catch{
-            console.log("error");
-            return response.json("error");
-        }
+        return bd.query2(id, name, full_name, latitude, longitude, display_order)
     }
     DeleteProvince(id){
-        
-        try{
-            BD.query3(id)
-            return("Succesfuly Deleted")
-        }catch(error){
-            console.log("Error")
-            return response.json("error")
-        }
+        return bd.query3(id);
     }
     
 }

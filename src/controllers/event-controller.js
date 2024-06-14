@@ -38,11 +38,7 @@ router.get("/:id", async (request, response) => {
   const eventId = request.params.id;
   try {
     const event = await eventService.eventDetail(eventId);
-    if (event) {
-      return response.json(event);
-    } else {
-      return response.status(404).json({ message: "Evento no encontrado" });
-    }
+    return response.json(event);
   } catch (error) {
     console.log("Error en el controlador de eventos:", error);
     return response.status(500).json({ error: "Error en el servidor" });

@@ -7,11 +7,9 @@ export default class BD{
         this.client = new Client(Bd_config);
         this.client.connect();
     }
-    async query1(id, name, full_name, latitude, longitude, display_order) {
-        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order,) VALUES ('${id}','${name}', '${full_name}', '${latitude}', '${longitude}', ${display_order})`;
-        const values = [id,name,full_name,latitude,longitude,display_order];
+    async query1(name, full_name, latitude, longitude, display_order) {
+        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${name}', '${full_name}', '${latitude}', '${longitude}', ${display_order})`;
         const respuesta = await this.client.query(sql);
-        await this.Client.query(sql, values);
         return respuesta;
         
     }
@@ -22,7 +20,7 @@ export default class BD{
         return respuesta;
     }
     async query3(id) {
-        const sql = `DELETE * FROM provinces WHERE id = '${id}`;
+        const sql = `DELETE FROM provinces WHERE id = '${id}'`;
         const answer = await this.client.query(sql);
         return answer;
     }
