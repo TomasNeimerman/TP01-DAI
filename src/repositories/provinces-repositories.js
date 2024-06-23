@@ -32,12 +32,12 @@ export default class BD{
     async query5(id) {
         const sql = `SELECT * from provinces WHERE id = '${id}'`
         const answer = await this.client.query(sql);
-        return answer.rows
+        return answer.rows;
     }
     
-    async query6(id) {
-        const sql = `SELECT * FROM locations WHERE id_province = '${id}'`;
-        const answer = await this.client.query(sql);
+    async query6(id,limit,offset) {
+        const sql = `SELECT * FROM locations WHERE id_province = '${id}' LIMIT $1 OFFSET $2`;
+        const answer = await this.client.query(sql, [limit,offset]);
         return answer.rows;
     }
     

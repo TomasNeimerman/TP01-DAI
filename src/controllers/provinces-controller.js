@@ -4,35 +4,37 @@ const router = Router();
 const provService = new ProvinceService()
 
 router.get("/", async (request, response) => {
-  const id = request.query.id;
-  const locations = request.query.locations
+
     try {
       const allProvinces = await provService.getProvince();
-      if(id != null){
-        try{
-          const provId = await provService.getProvinceById(id);
-          if(locations != null){
-            try{
-              const location = await provService.getLocationsByProvinceId(id);
-              return response.json(location);
-            }catch{
-              console.error("Error al encontrar las localidades", error);
-              return response.status(401)("No se encontraron las localidades")
-            }
-          }
-          console.log(provId)
-          return response.json(provId)
-        }catch{
-          console.error("Error al buscar la provincia", error);
-          return response.status(404)("No se encontro la provincia")
-        }
-      }
       return response.json(allProvinces);
     }catch (error) {
             console.error("Error al buscar provincia", error);
-            return response.status(500)("Error al buscar provincia");
+            return response.status(404).json("Error al buscar provincia");
     }
       
+});
+router.get("/:id", async (request,response) =>{
+  const id = request.params.id;
+  try{
+    const provId = await provService.getProvinceById(id);
+    console.log(provId);
+    return response.json(provId);
+  }catch(error){
+    console.error("Error al buscar la provincia", error);
+    return response.status(404).json("No se encontro la provincia");
+  }
+});
+router.get("/:id/locations", async (request,response) =>{
+  const id = request.params.id;
+ 
+  try{
+    const loc = await provService.getLocationsByProvinceId(id);
+    return response.json(loc);
+  }catch(error){
+    console.error("error al buscar localidades:", error)
+    return response.status(404).json("No se encontraron localidades");
+  }
 });
 
 router.post("/", (request, response) => {

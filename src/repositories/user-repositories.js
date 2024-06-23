@@ -7,7 +7,6 @@ export default class Bd {
         this.client = new pg.Client(Bd_config);
         this.client.connect();
     }
-
     async Consulta(sql, values = []) {
         try {
             const respuesta = await this.client.query(sql, values);

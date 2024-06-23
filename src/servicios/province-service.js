@@ -5,15 +5,15 @@ export default class ProvinceService {
     async getProvince() {
         const province = await bd.query4();
         const provArray = province.map((row) => {
-            var provinces = new Object()
-            provinces.id = row.id;
-            provinces.name = row.name;
-            provinces.full_name = row.full_name;
-            provinces.latitude = row.latitude;
-            provinces.longitude = row.longitude;
-            provinces.display_order = row.display_order;
+            var provObj = new Object()
+            provObj.id = row.id;
+            provObj.name = row.name;
+            provObj.full_name = row.full_name;
+            provObj.latitude = row.latitude;
+            provObj.longitude = row.longitude;
+            provObj.display_order = row.display_order;
         return{
-            provinces:provinces
+            provinces: provObj
         }
     })
     return provArray
@@ -21,34 +21,37 @@ export default class ProvinceService {
 
     async getProvinceById(id){
         const province = await bd.query5(id)
-        const dateBd = province.map(row =>{ 
-            const provinceO = new Object();
-            provinceO.id = row.id,
-            provinceO.name = row.name,
-            provinceO.full_name = row.full_name,
-            provinceO.latitude = row.latitude,
-            provinceO.longitude = row.longitude,
-            provinceO.display_order = row.display_order;
-            return{
-            province: provinceO,
-        }       
-    })
-    return dateBd;
+       
+        return  province.map((row) =>{
+            return {
+                id: row.id,
+                name: row.name,
+                full_name: row.full_name,
+                latitude: row.latitude,
+                longitude: row.longitude,
+                display_order: row.display_order
+            }
+           });
+    
+        
     }
 
-    async getLocationsByProvinceId(id) {
-       const locations = await bd.query6(id)
-       const dateBd = locations.map(row =>{
-        const locationsO = new Object();
-        locationsO.id = row.id,
-        locationsO.name = row.name,
-        locationsO.id_province = row.id_province,
-        locationsO.latitude = row.latitude,
-        locationsO.longitude = row.longitude
+    async getLocationsByProvinceId(id){
+        const limit = 15;
+        const offset = 0;
+        const loc = await bd.query6(id,limit,offset)
+        const dateBd = loc.map((row) =>{
+        var locObj = new Object();
+        locObj.id = row.id;
+        locObj.name = row.name;
+        locObj.id_province = row.id_province;
+        locObj.latitude = row.latitude;
+        locObj.longitude = row.longitude;
         return{
-            locations: locationsO,
+            locations: locObj
         }
        })
+       console.log(dateBd);
        return dateBd;
     }
     CreateProvince(name, full_name, latitude, longitude, display_order){
