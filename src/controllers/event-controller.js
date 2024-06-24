@@ -1,5 +1,6 @@
 import {Router} from "express";
 import EventService from "../servicios/event-service.js";
+import AuthMiddleware from "../auth/authMiddleware.js";
 
 const eventService = new EventService();
 const router = Router() 
@@ -69,7 +70,7 @@ router.get("/:id/enrollment", async(request, respose) => {
   }
 })
 
-router.post("/:id", async(request, response) => {
+router.post("/" , AuthMiddleware, async(request, response) => {
   const name = request.body.name
   const description = request.body.description
   const id_event_category = request.body.id_event_category
@@ -79,17 +80,24 @@ router.post("/:id", async(request, response) => {
   const price = request.body.price
   const enabled_for_enrollment = request.body.enabled_for_enrollment
   const max_assistance = request.body.max_assistance
-  const id_creator_user = request.body.id_creator_user
+  const id_creator_user = request.user.id
+  const evento = [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user]
   try{
-      const ok = await eventService.createEvent(request.params.id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
-      if(ok){
-          return response.json(ok)
+      const ok = await eventService.checkParameters(evento)
+      if(ok.length > 0){
+        response.statusCode = 400
+        return response.json(msg)
+      }
+      const okPlus = await eventService.createEvent(evento)  
+      if(okPlus){
+          return response.json(okPlus)
       } else{
           console.log("Error en creacion de eventos controller")
           return response.json("Error en la creacion")
       }
-  }catch(error){
-
+    }catch(error){
+      response.statusCode = 400
+      return response.json(" faltan parametros para busqueda")
   }
 })
 

@@ -144,10 +144,12 @@ export default class BD{
         return response.rows;
     }
     
-    async query5(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
-        const sql = `INSERT INTO events (id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
-        values ('${id}', '${name}', '${description}', '${id_event_category}', '${id_envet_location}', '${start_date}', '${duration_in_minutes}', '${price}', '${enabled_for_enrollment}', '${max_assistance}', '${id_creator_user}')`;
+    async query5(evento){
+        const sql = `INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
+        values ('${evento[0]}','${evento[1]}','${evento[2]}','${evento[3]}','${evento[4]}','${evento[5]}','${evento[6]}','${evento[7]}','${evento[8]}','${evento[9]}')`;
+        
         const answer = await this.client.query(sql);
+        
         return answer
     }
 
@@ -188,4 +190,10 @@ export default class BD{
           console.log(error);
         }
       } 
+
+      async query10(idEL){
+        const sql = `SELECT max_capacity FROM event_locations WHERE id = '${idEL}'`
+        const maxC = await this.client.query(sql)
+        return maxC.rows
+    }
 }   

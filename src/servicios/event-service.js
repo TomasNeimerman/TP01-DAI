@@ -160,14 +160,8 @@ export default class EventService {
     }
    
 
-    async createEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
-        try{
-            bd.query5(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user)
-            return("Evento creado efectivamente")
-        } catch(error){
-            console.log("Error creacion de evento");
-            return response.json("Error creacion de evento");
-        }
+    async createEvent(evento){
+        return bd.query5(evento);
     }
     
     async editEvent(id, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
@@ -204,6 +198,37 @@ export default class EventService {
         await repo.query9(rating,id)
         return "rating updated";
       }
+
+      async maxCapacity(idEL){
+        try{
+            const max_capacity = bd.query10(idEL)
+            return max_capacity
+        }catch{
+            console.log("Error service capacity")
+            return response.json("Error servicio capacity")
+        }
+    }
+
+      async checkParameters(event) {
+        switch (true) {
+            case (event[0] == null || event[0].length < 3):
+                return "Nombre invalido";
+    
+            case (event[1] == null || event[1].length < 3):
+                return "Descripcion invalida";
+    
+            case (event[6] < 0):
+                return "Precio invalido menor que 0";
+    
+            case (event[5] < 0):
+                return "Duracion invalida menor que 0";
+        }
+        const max_capacity = await this.maxCapacity(event[3]);
+        if (Number(event[8]) > max_capacity[0].max_capacity) {
+            return "Capacidad Maxima invalida";
+        }
+        return "";
+    }    
 }  
 
   

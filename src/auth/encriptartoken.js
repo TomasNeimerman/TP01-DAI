@@ -1,14 +1,12 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-export default async function encriptartoken(token) {
-  const secretKey = "contraseña123";
-  let payloadOriginal = null;
-
+export default async function decryptToken(token) {
   try {
-    payloadOriginal = jwt.verify(token, process.env.SECRET_KEY);
+    const payload = jwt.verify(token, process.env.SECRET_KEY);
+    return payload;
   } catch (error) {
-    console.error(error);
+    console.error("Error al verificar el token:", error);
+    return null;
   }
-  return payloadOriginal;
 }
