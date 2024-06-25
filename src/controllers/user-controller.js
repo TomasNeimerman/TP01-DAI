@@ -8,53 +8,59 @@ const userService = new UserService();
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+
   try {
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!regex.test(username)) {
-      return res.status(400).json({
-        success: false,
-        message: "El email es inválido.",
-        token: ""
+      const usuario = await userService.query(username, password);
+      const token = await generarToken(usuario);
+      return res.json({
+          success: true,
+          message: "",
+          token
       });
-    }
-    const user = await userService.authenticateUser(username, password);
-    if (!user) {
-      return res.status(401).json({ 
-        success: false,
-        message: "Usuario o clave inválida",
-        token: ""
-      });
-    }
-    const token = await generateToken(user);
-    return res.json({ 
-      success: true,
-      message: "Logeado exitosamente",
-      token
-    });
   } catch (error) {
-    console.error("Error durante el inicio de sesión:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+      console.error("Error durante el inicio de sesión:", error.message);
+
+      return res.status(error.status || 500).json({
+          success: false,
+          message: error.message,
+          token: ""
+      });
   }
 });
 
 router.post("/register", async (req, res) => {
   const { first_name, last_name, username, password } = req.body;
+
   try {
-    const registerResponse = await userService.registerUser(first_name, last_name, username, password);
-    return res.json(registerResponse);
+      const resultadoRegistro = await userService.register(first_name, last_name, username, password);
+
+      return res.status(201).json({
+          success: true,
+          message: resultadoRegistro.message,
+          userId: resultadoRegistro.userId
+      });
   } catch (error) {
-    console.error("Error durante el registro de usuario:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+      console.error("Error durante el registro de usuario:", error);
+
+      return res.status(error.status || 500).json({
+          success: false,
+          message: error.message
+      });
   }
 });
 
 router.get("/", AuthMiddleware, async (req, res) => {
   try {
-    const user = req.user;
-    return res.json(user);
+      const usuario = req.user;
+
+      return res.json(usuario);
   } catch (error) {
-    console.error("Error al obtener la información del usuario:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+      console.error("Error al obtener la información del usuario:", error.message);
+
+      return res.status(error.status || 500).json({
+          success: false,
+          message: error.message
+      });
   }
 });
 

@@ -3,40 +3,45 @@ import BD from "../repositories/user-repositories.js";
 const bd = new BD();
 
 export default class UserService {
-  async authenticateUser(username, password) {
-    const sql = `SELECT * FROM users WHERE username = $1 AND password = $2`;
-    const values = [username, password];
+  async login(username, password) {
     try {
-      const result = await bd.query(sql, values);
-      return result.rows[0];
-    } catch (error) {
-      throw new Error("Error al autenticar usuario: " + error.message);
-    }
-  }
+        const usuario = await bd.query4(username);
 
-  async registerUser(first_name, last_name, username, password) {
-    const existingUser = await this.findUserByUsername(username);
-    if (existingUser) {
-      throw new Error("El nombre de usuario ya está en uso.");
-    }
-    const sql = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING *`;
-    const values = [first_name, last_name, username, password];
-    try {
-      const result = await bd.query(sql, values);
-      return result.rows[0];
-    } catch (error) {
-      throw new Error("Error al registrar usuario: " + error.message);
-    }
-  }
+        if (!usuario) {
+            console.log(error)
+        }
 
-  async findUserByUsername(username) {
-    const sql = `SELECT * FROM users WHERE username = $1`;
-    const values = [username];
-    try {
-      const result = await bd.query(sql, values);
-      return result.rows[0];
+        if (password !== usuario.password) {
+            console.log(error)
+        }
+
     } catch (error) {
-      throw new Error("Error al buscar usuario por nombre de usuario: " + error.message);
+        console.error('Error durante el inicio de sesión:');
+        throw new Error('Error interno del servidor');
     }
-  }
+}
+
+async register(firstName, lastName, username, password) {
+    try {
+        if (firstName.length < 3 || lastName.length < 3) {
+            throw new Error('Los campos first_name o last_name deben tener al menos tres caracteres.');
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(username)) {
+            throw new Error('El email es inválido.');
+        }
+
+        if (password.length < 3) {
+            throw new Error('El campo password debe tener al menos tres caracteres.');
+        }
+
+        const userId = await bd.query3(firstName, lastName, username, password);
+
+        return { success: true, message: 'Usuario creado con éxito.'};
+    } catch (error) {
+        console.error('Error durante el registro de usuario:');
+        throw new Error('Error interno del servidor');
+    }
+}
 }
