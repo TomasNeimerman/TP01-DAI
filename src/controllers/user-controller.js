@@ -2,6 +2,7 @@ import express from "express";
 import UserService from "../servicios/user-service.js";
 import generateToken from "../auth/token.js";
 import AuthMiddleware from "../auth/authMiddleware.js";
+import encriptartoken from "../auth/encriptartoken.js";
 
 const router = express.Router();
 const userService = new UserService();
@@ -10,15 +11,16 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-      const usuario = await userService.query(username, password);
-      const token = await generarToken(usuario);
+      const usuario = await userService.login(username, password);
+      const token = await generateToken(usuario[0]);
+      await encriptartoken(token);
       return res.json({
           success: true,
-          message: "",
+          message: `¡Bienvenido ${usuario[0].first_name} ${usuario[0].last_name}!`,
           token
       });
   } catch (error) {
-      console.error("Error durante el inicio de sesión:", error.message);
+      console.error("Error durante el inicio de sesión:", error);
 
       return res.status(error.status || 500).json({
           success: false,

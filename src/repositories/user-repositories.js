@@ -49,14 +49,8 @@ async query3(first_name, last_name, username, password) {
 
 async query4(username) {
     const sql = `SELECT * FROM users WHERE username = $1`;
-    const values = [username];
-
-    try {
-        const respuesta = await pool.query(sql, values);
-        return respuesta.rows[0];
-    } catch (error) {
-        console.error("Error al buscar usuario por nombre de usuario:", error);
-        throw new Error("Error al buscar usuario por nombre de usuario");
-    }
+    const respuesta = await this.client.query(sql, [username]);
+    return respuesta.rows
+    
 }
 }

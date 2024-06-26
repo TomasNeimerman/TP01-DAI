@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 export default async function encriptartoken(token) {
-  const secretKey = "contraseña123";
+  const secretKey = "holapablo";
   let payloadOriginal = null;
 
   try {

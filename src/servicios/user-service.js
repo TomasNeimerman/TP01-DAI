@@ -8,15 +8,15 @@ export default class UserService {
         const usuario = await bd.query4(username);
 
         if (!usuario) {
-            console.log(error)
+            console.log("Usuario no encontrado")
         }
 
         if (password !== usuario.password) {
-            console.log(error)
+            console.log("Contraseña incorrecta")
         }
-
+        return usuario;
     } catch (error) {
-        console.error('Error durante el inicio de sesión:');
+        console.error('Error durante el inicio de sesión:', error);
         throw new Error('Error interno del servidor');
     }
 }
@@ -44,4 +44,6 @@ async register(firstName, lastName, username, password) {
         throw new Error('Error interno del servidor');
     }
 }
+
 }
+
