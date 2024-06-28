@@ -40,7 +40,7 @@ async register(firstName, lastName, username, password) {
 
         return { success: true, message: 'Usuario creado con éxito.'};
     } catch (error) {
-        console.error('Error durante el registro de usuario:');
+        console.error('Error durante el registro de usuario:', error);
         throw new Error('Error interno del servidor');
     }
 }

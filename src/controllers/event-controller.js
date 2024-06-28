@@ -96,6 +96,7 @@ router.post("/" , AuthMiddleware, async(request, response) => {
           return response.json("Error en la creacion")
       }
     }catch(error){
+      console.log(error)
       response.statusCode = 400
       return response.json(" faltan parametros para busqueda")
   }
@@ -105,7 +106,7 @@ router.put("/:id", async (request, response) => {
   const name = request.body.name
   const description = request.body.description
   const id_event_category = request.body.id_event_category
-  const id_envet_location = request.body.id_envet_location
+  const id_event_location = request.body.id_event_location
   const start_date = request.body.start_date
   const duration_in_minutes = request.body.duration_in_minutes
   const price = request.body.price
@@ -113,7 +114,7 @@ router.put("/:id", async (request, response) => {
   const max_assistance = request.body.max_assistance
   const id_creator_user = request.body.id_creator_user
   try{
-      const ok = await eventService.editEvent(request.params.id, id_creator_user, name, description, id_event_category, id_envet_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
+      const ok = await eventService.editEvent(request.params.id, id_creator_user, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
       if(ok){
       }
   } catch(error){
@@ -133,10 +134,11 @@ router.delete("/:id", (request, response) => {
   }
 })
 
-router.post("/:id/enrollment" , async (request, response) => {
+router.post("/:id/enrollment" , AuthMiddleware, async (request, response) => {
   const enrollment = {};
 
-  enrollment.idEvent = request.params.id;
+  enrollment.id_event = request.params.id;
+  enrollment.id_user = request.user.id;
   enrollment.attended = request.query.attended;
   enrollment.rating = request.query.rating;
   enrollment.descripcion = request.query.descripcion;
@@ -149,6 +151,7 @@ router.post("/:id/enrollment" , async (request, response) => {
     return response.json(error);
   }
 })
+router.delete("/:id/enrollment")
 
 router.patch("/:id/enrollment",async (request, response) => {
     const idEvento = request.params.id;

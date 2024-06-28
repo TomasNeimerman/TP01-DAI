@@ -21,7 +21,7 @@ export default class BD {
     const values = [username, password];
     
     try {
-        const respuesta = await pool.query(sql, values);
+        const respuesta = await this.client.query(sql, values);
         return respuesta.rows[0];
     } catch (error) {
         console.error("Error al autenticar usuario:", error);
@@ -30,16 +30,16 @@ export default class BD {
 }
 
 async query3(first_name, last_name, username, password) {
-    const existingUser = await this.buscarUsuarioPorUsername(username);
+    /*const existingUser = await this.query4(username);
     if (existingUser) {
         throw new Error("El nombre de usuario ya está en uso.");
     }
-
+*/
     const sql = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING id`;
     const values = [first_name, last_name, username, password];
 
     try {
-        const respuesta = await pool.query(sql, values);
+        const respuesta = await this.client.query(sql, values);
         return respuesta.rows[0].id;
     } catch (error) {
         console.error("Error al registrar usuario:", error);

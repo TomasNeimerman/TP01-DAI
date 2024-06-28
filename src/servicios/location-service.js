@@ -34,4 +34,19 @@ export default class LocationService{
             };
         });
     }
+    async eventLocations(id,userId){
+        const location = await bd.query3(id,userId);
+        return location.map((row)=>{
+            return {
+                id:row.id,
+                id_location:row.id_location,
+                name:row.name,
+                full_address:row.full_address,
+                max_capacity:row.max_capacity,
+                latitude:row.latitude,
+                longitude:row.longitude,
+                id_creator_user:row.id_creator_user
+            }
+        })
+    }
 }

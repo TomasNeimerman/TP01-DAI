@@ -1,5 +1,6 @@
 import {Router, response} from "express";
 import LocationService from "../servicios/location-service.js";
+import AuthMiddleware from "../auth/authMiddleware.js";
 
 const locationService = new LocationService();
 const router = Router() 
@@ -16,15 +17,33 @@ router.get("/",  async (request, response) => {
         return response.status(400).json("No se pudo mostrar las localidades")
     }
 })
-router.get("/:id", async (request, response) => {
+router.get("/:id", AuthMiddleware, async (request, response) => {
     const id = request.params.id;
+    const id_creator_user  = request.user.id;
+    const event_location = request.params.id;
     try{
         const res = await locationService.locationById(id);
+        if(event_location){
+            try{
+                if(id_creator_user != null){
+                    const res = await locationService.eventLocations(id,id_creator_user);
+                    return response.status(201).json(res)
+                }
+                else{
+                    console.log("Falta autorizacion");
+                    return response.status(401).json("Unauthorized")
+                }
+            }catch(error){
+                console.log(error);
+                return response.status(404).json("No se encontraron localizaciones")
+            }
+        }
         return response.status(201).json(res);
     }catch(error){
         console.log("Hubo un error:", error);
         return response.status(400).json("No se pudo encontrar la localidad")
     }
 })
+
 
 export default router;

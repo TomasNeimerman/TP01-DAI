@@ -1,3 +1,4 @@
+import e from "express";
 import BD from "../repositories/event-repositories.js";
 const bd = new BD();
 
@@ -186,8 +187,8 @@ export default class EventService {
 
     async eventInscription(enrollment) {
         try{
-            bd.query8(enrollment)
-            return("inscrive")
+            const enroll = bd.query8(enrollment)
+            return(enroll)
         } catch(error){
             console.log(error);
             return response.json(error);
@@ -223,7 +224,7 @@ export default class EventService {
             case (event[5] < 0):
                 return "Duracion invalida menor que 0";
         }
-        const max_capacity = await this.maxCapacity(event[3]);
+        const max_capacity = await this.maxCapacity(event[9]);
         if (Number(event[8]) > max_capacity[0].max_capacity) {
             return "Capacidad Maxima invalida";
         }
