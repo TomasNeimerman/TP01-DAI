@@ -18,9 +18,9 @@ export default class BD{
         return response.rows;
     }
     async query3(id,user_id){
-        const sql = `SELECT * FROM event_locations WHERE id_location = $1 AND id_creator_user = $2`;
-        const values = {id,user_id};
-        const response = await this.client.query(sql, values);
+        const sql = `SELECT * FROM event_locations WHERE id_location = '${id}' AND id_creator_user = '${user_id}'`;
+
+        const response = await this.client.query(sql);
         return response.rows;
     }
 }

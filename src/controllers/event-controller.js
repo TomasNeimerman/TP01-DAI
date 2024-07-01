@@ -58,7 +58,7 @@ router.get("/:id/enrollment", async(request, respose) => {
           const user = await eventService.peopleList(request.params.id, first_name, last_name, username, attended, rating)
           console.log(user)
           if(user){
-              return respose.json(user)
+              return respose.json("user")
           } else{
               console.log("Error ejercicio 5 ")
               return respose.json(" user not found")
@@ -70,100 +70,135 @@ router.get("/:id/enrollment", async(request, respose) => {
   }
 })
 
-router.post("/" , AuthMiddleware, async(request, response) => {
-  const name = request.body.name
-  const description = request.body.description
-  const id_event_category = request.body.id_event_category
-  const id_event_location = request.body.id_event_location
-  const start_date = request.body.start_date
-  const duration_in_minutes = request.body.duration_in_minutes
-  const price = request.body.price
-  const enabled_for_enrollment = request.body.enabled_for_enrollment
-  const max_assistance = request.body.max_assistance
-  const id_creator_user = request.user.id
-  const evento = [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user]
-  try{
-      const ok = await eventService.checkParameters(evento)
-      if(ok.length > 0){
-        response.statusCode = 400
-        return response.json(msg)
-      }
-      const okPlus = await eventService.createEvent(evento)  
-      if(okPlus){
-          return response.json(okPlus)
-      } else{
-          console.log("Error en creacion de eventos controller")
-          return response.json("Error en la creacion")
-      }
-    }catch(error){
-      console.log(error)
-      response.statusCode = 400
-      return response.json(" faltan parametros para busqueda")
-  }
-})
+router.post("/", AuthMiddleware, async (request, response) => {
+  const { name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance } = request.body;
+  const id_creator_user = request.user.id;
 
-router.put("/:id", async (request, response) => {
-  const name = request.body.name
-  const description = request.body.description
-  const id_event_category = request.body.id_event_category
-  const id_event_location = request.body.id_event_location
-  const start_date = request.body.start_date
-  const duration_in_minutes = request.body.duration_in_minutes
-  const price = request.body.price
-  const enabled_for_enrollment = request.body.enabled_for_enrollment
-  const max_assistance = request.body.max_assistance
-  const id_creator_user = request.body.id_creator_user
-  try{
-      const ok = await eventService.editEvent(request.params.id, id_creator_user, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance)
-      if(ok){
-      }
-  } catch(error){
-      console.log("Error en edicion de eventos controller")
-      return response.json("Error en edicion de eventos")
-  } 
-})
+  const evento = { name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user };
 
-router.delete("/:id", (request, response) => {
-  const id_creator_user = request.body.id_creator_user
-  try{
-      const ok = eventService.deleteEvent(request.params.id,id_creator_user)
-      return response.json(ok)
-  }catch(error){
-      console.log("Error en el delete eventos")
-      return response.json("Error en borrado de evento")
-  }
-})
-
-router.post("/:id/enrollment" , AuthMiddleware, async (request, response) => {
-  const enrollment = {};
-
-  enrollment.id_event = request.params.id;
-  enrollment.id_user = request.user.id;
-  enrollment.attended = request.query.attended;
-  enrollment.rating = request.query.rating;
-  enrollment.descripcion = request.query.descripcion;
-  enrollment.observations = request.query.observations;
   try {
-    const card = await eventService.eventInscription(enrollment);
-    return response.json(card);
-  } catch (error) {
-    console.log(error);
-    return response.json(error);
-  }
-})
-router.delete("/:id/enrollment")
+      const errorMsg = await eventService.checkParameters(evento);
+      if (errorMsg) {
+          return response.status(400).json({ message: errorMsg });
+      }
 
-router.patch("/:id/enrollment",async (request, response) => {
-    const idEvento = request.params.id;
-    const rating = request.query.rating;
-    try {
-      const mensaje = await eventService.rating(idEvento, rating);
-      console.log(mensaje);
-      return response.status(200).send(mensaje);
-    } catch (error) {
+      const created = await eventService.createEvent(evento);
+      if (created) {
+          return response.status(201).json({ message: "Evento creado" });
+      } else {
+          return response.status(500).json({ message: "Error en la creación del evento" });
+      }
+  } catch (error) {
       console.log(error);
-      return response.json(error);
-    }
-  });
+      return response.status(400).json({ message: "Faltan parámetros para la creación del evento" });
+  }
+});
+
+router.put("/:id", AuthMiddleware, async (request, response) => {
+  const id = request.params.id;
+  const { name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance } = request.body;
+  const id_creator_user = request.user.id;
+
+  const evento = { id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user };
+
+  try {
+      const errorMsg = await eventService.checkParameters(evento);
+      if (errorMsg) {
+          return response.status(400).json({ message: errorMsg });
+      }
+
+      const updated = await eventService.editEvent(evento);
+      if (updated) {
+          return response.status(200).json({ message: "Evento actualizado correctamente" });
+      } else {
+          return response.status(404).json({ message: "Evento no encontrado o no pertenece al usuario autenticado" });
+      }
+  } catch (error) {
+      console.log(error);
+      return response.status(400).json({ message: "Error al actualizar el evento" });
+  }
+});
+
+router.delete("/:id", AuthMiddleware, async (request, response) => {
+  const id = request.params.id;
+  const id_creator_user = request.user.id;
+
+  try {
+      const enrolledCount = await eventService.checkEnrolled(id);
+      if (enrolledCount > 0) {
+          return response.status(400).json({ message: "No se puede borrar, existen inscriptos" });
+      }
+
+      const deleted = await eventService.deleteEvent(id, id_creator_user);
+      if (deleted) {
+          return response.status(200).json({ message: "Evento eliminado correctamente" });
+      } else {
+          return response.status(404).json({ message: "Evento no encontrado o no pertenece al usuario autenticado" });
+      }
+  } catch (error) {
+      console.log(error);
+      return response.status(400).json({ message: "Error al eliminar el evento" });
+  }
+});
+
+router.post("/:id/enrollment", AuthMiddleware, async (request, response) => {
+  const id_user = request.user.id;
+  const event_id = request.params.id;
+
+  try {
+      const enrolled = await eventService.enrollEvent(id_user, event_id);
+      if (enrolled) {
+          return response.status(201).json({ message: "Inscrito al evento efectivamente" });
+      } else {
+          return response.status(400).json({ message: "Error a la hora de registrarse" });
+      }
+  } catch (error) {
+      console.log(error);
+      return response.status(400).json({ message: "Error a la hora de registrarse" });
+  }
+});
+
+router.delete("/:id/enrollment", AuthMiddleware, async (request, response) => {
+  const id_user = request.user.id;
+  const event_id = request.params.id;
+
+  try {
+      const unrolled = await eventService.unrollEvent(id_user, event_id);
+      if (unrolled) {
+          return response.status(200).json({ message: "Usuario del evento eliminado correctamente" });
+      } else {
+          return response.status(400).json({ message: "Error al eliminar el usuario del evento" });
+      }
+  } catch (error) {
+      console.log(error);
+      return response.status(400).json({ message: "Error al eliminar el usuario del evento" });
+  }
+});
+
+router.patch("/:id/enrollment/:rating", AuthMiddleware, async (request, response) => {
+  const id_evento = request.params.id;
+  const rating = request.params.rating;
+  const observations = request.body.observations;
+  const id_user = request.user.id;
+
+  try {
+      const validationResult = await eventService.verifyEnroll(id_evento, rating, id_user);
+      if (validationResult !== true) {
+          return response.status(400).json({ message: validationResult });
+      }
+
+      const rated = await eventService.rateEvent(id_evento, rating, observations, id_user);
+      if (rated) {
+          return response.status(200).json({ message: "Evento calificado correctamente" });
+      } else {
+          return response.status(400).json({ message: "Error al calificar el evento" });
+      }
+  } catch (error) {
+      console.log(error);
+      return response.status(400).json({ message: "Error al calificar el evento" });
+  }
+});
+
+
 
 export default router;
