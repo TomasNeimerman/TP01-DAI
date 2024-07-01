@@ -58,7 +58,7 @@ router.get("/:id/enrollment", async(request, respose) => {
           const user = await eventService.peopleList(request.params.id, first_name, last_name, username, attended, rating)
           console.log(user)
           if(user){
-              return respose.json("user")
+              return respose.json(user)
           } else{
               console.log("Error ejercicio 5 ")
               return respose.json(" user not found")

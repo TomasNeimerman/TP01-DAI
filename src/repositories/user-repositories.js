@@ -30,16 +30,14 @@ export default class BD {
 }
 
 async query3(first_name, last_name, username, password) {
-    /*const existingUser = await this.query4(username);
-    if (existingUser) {
-        throw new Error("El nombre de usuario ya está en uso.");
-    }
-*/
-    const sql = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING id`;
-    const values = [first_name, last_name, username, password];
-
+    const num = await this.query5()
+    let id = parseInt(num[0].count)
+    const sql = `INSERT INTO users (id, first_name, last_name, username, password)
+        VALUES ('${id+1}', '${first_name}', '${last_name}', '${username}', '${password}')
+        RETURNING id`;
+        console.log(sql)
     try {
-        const respuesta = await this.client.query(sql, values);
+        const respuesta = await this.client.query(sql);
         return respuesta.rows[0].id;
     } catch (error) {
         console.error("Error al registrar usuario:", error);
@@ -52,5 +50,10 @@ async query4(username) {
     const respuesta = await this.client.query(sql, [username]);
     return respuesta.rows
     
+}
+async query5(){
+    const sql = `SELECT COUNT(*) FROM users`;
+    const respuesta = await this.client.query(sql);
+    return respuesta.rows
 }
 }
