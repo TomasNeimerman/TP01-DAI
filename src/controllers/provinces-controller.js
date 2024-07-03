@@ -4,7 +4,6 @@ const router = Router();
 const provService = new ProvinceService()
 
 router.get("/", async (request, response) => {
-
     try {
       const allProvinces = await provService.getProvince();
       return response.json(allProvinces);
@@ -44,23 +43,23 @@ router.post("/", (request, response) => {
   const longitude = request.body.longitude;
   const display_order = request.body.display_order;
   try {
-    const verification = provService.CreateProvince(name,full_name,latitude,longitude,display_order);
-    return response.status(201).json("Created");
+    provService.CreateProvince(name,full_name,latitude,longitude,display_order);
+    return response.status(201).json("Evento Creado");
   } catch (error) {
     console.log("error al crear provincia",error);
     return response.status(400).json("error al crear provincia");
   }
 });
-router.put("/:id", (request, response) => {
-  const id = request.params.id;
+router.put("/", (request, response) => {
+  const id = request.body.id;
   const name = request.body.name;
   const full_name = request.body.full_name;
   const latitude = request.body.latitude;
   const longitude = request.body.longitude;
   const display_order = request.body.display_order;
   try {
-    const verification = provService.EditProvince(id,name,full_name,latitude,longitude,display_order);
-    return response.json("edited");
+    provService.EditProvince(id,name,full_name,latitude,longitude,display_order);
+    return response.json("Provincia editada");
   } catch(error) {
     console.log("error al editar provincia",error);
     return response.json("error al editar provincia");
@@ -69,7 +68,7 @@ router.put("/:id", (request, response) => {
 router.delete("/:id", (request, response) => {
   const id = request.params.id
   try {
-    const verification = provService.DeleteProvince(id);
+    provService.DeleteProvince(id);
     return response.json("deleted");
   } catch(error) {
     console.log("Error al borrar provincia", error);

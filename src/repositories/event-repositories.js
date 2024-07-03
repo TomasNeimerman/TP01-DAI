@@ -92,32 +92,46 @@ export default class BD {
     }
 
     async query3(id) {
-        const sql = `
-            SELECT 
-                e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, 
-                e.enabled_for_enrollment, e.max_assistance, e.id_event_category, e.id_event_location, 
-                e.id_creator_user, u.id AS user_id, u.username, u.first_name, u.last_name, 
-                ec.id AS eventcat_id, ec.name AS eventcat_name, el.id AS el_id, el.name AS el_name, 
-                el.full_address, el.latitude, el.longitude, el.max_capacity,
-                json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
-            FROM 
-                events e    
-            JOIN 
-                users u ON e.id_creator_user = u.id
-            INNER JOIN 
-                event_categories ec ON e.id_event_category = ec.id
-            JOIN 
-                event_locations el ON e.id_event_location = el.id
-            INNER JOIN 
-                event_tags et ON e.id = et.id_event
-            JOIN 
-                tags t ON et.id_tag = t.id
-            WHERE 
-                e.id = $1
-            GROUP BY 
-                e.id, u.id, ec.id, el.id
-        `;
-        const answer = await this.client.query(sql, [id]);
+        const sql = `SELECT e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance, e.id_event_category, e.id_event_location, e.id_creator_user, u.id AS user_id, u.username, u.first_name, u.last_name, ec.id AS eventcat_id, ec.name AS eventcat_name, ec.display_order,
+        json_build_object(
+            'id', el.id,
+            'name', el.name,
+            'full_address', el.full_address,
+            'latitude', el.latitude,
+            'longitude', el.longitude,
+            'max_capacity', el.max_capacity
+        ) AS event_location,
+        json_build_object(
+            'id', l.id,
+            'name', l.name,
+            'latitude', l.latitude,
+            'longitude', l.longitude
+        ) AS location,
+        json_build_object(
+            'id', p.id,
+            'name', p.name,
+            'full_name', p.full_name,
+            'latitude', p.latitude,
+            'longitude', p.longitude,
+            'display_order', p.display_order
+        ) AS province,
+        array(
+            SELECT json_build_object(
+                'id', tags.id,
+                'name', tags.name
+            )
+            FROM tags
+        ) AS tags
+        FROM events e
+        LEFT JOIN users u ON e.id_creator_user = u.id
+        LEFT JOIN event_categories ec ON e.id_event_category = ec.id
+        LEFT JOIN event_locations el ON e.id_event_location = el.id
+        LEFT JOIN event_tags et ON e.id = et.id_event
+        LEFT JOIN tags t ON et.id_tag = t.id
+        LEFT JOIN locations l ON el.id_location = l.id
+        LEFT JOIN provinces p ON l.id_province = p.id
+        WHERE e.id = ${id} GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, el.id, l.id, p.id`;
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 
@@ -139,15 +153,7 @@ export default class BD {
             FROM
                 event_enrollments en
             JOIN
-                users u ON en.id_user = u.id
-            WHERE
-                ($1::int IS NULL OR en.id_event = $1)
-                AND ($2::text IS NULL OR u.first_name ILIKE $2)
-                AND ($3::text IS NULL OR u.last_name ILIKE $3)
-                AND ($4::text IS NULL OR u.username ILIKE $4)
-                AND ($5::boolean IS NULL OR en.attended = $5)
-                AND ($6::int IS NULL OR en.rating = $6)
-        `;
+                users u ON en.id_user = u.id`;
         const variables = [id, first_name ? `%${first_name}%` : null, last_name ? `%${last_name}%` : null, username ? `%${username}%` : null, attended, rating];
         const response = await this.client.query(sql, variables);
         return response.rows;

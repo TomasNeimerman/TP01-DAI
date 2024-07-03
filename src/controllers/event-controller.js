@@ -36,9 +36,9 @@ router.get("/",  async (request, response) => {
 })
 
 router.get("/:id", async (request, response) => {
-  const eventId = request.params.id;
+  const paramsId = request.params.id;
   try {
-    const event = await eventService.eventDetail(eventId);
+    const event = await eventService.eventDetail(paramsId);
     return response.json(event);
   } catch (error) {
     console.log("Error en el controlador de eventos:", error);
@@ -67,6 +67,8 @@ router.get("/:id/enrollment", async(request, respose) => {
         console.error("error", error);
         console.reponse.status(404).json("not found")
       }
+  }else{
+    consoleresponse.status(400).json({ message: "los parametros son todos nulos" });
   }
 })
 
@@ -75,7 +77,7 @@ router.post("/", AuthMiddleware, async (request, response) => {
   const id_creator_user = request.user.id;
 
   const evento = { name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user };
-
+console.log(evento)
   try {
       const errorMsg = await eventService.checkParameters(evento);
       if (errorMsg) {
