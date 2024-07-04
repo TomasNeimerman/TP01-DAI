@@ -8,8 +8,8 @@ export default class BD{
         this.client.connect();
     }
     async query1(limit,offset){
-        const sql = `SELECT * FROM locations LIMIT $1 OFFSET $2`;
-        const response = await this.client.query(sql, [limit, offset]);
+        const sql = `SELECT * FROM locations LIMIT ${limit} OFFSET ${offset}`;
+        const response = await this.client.query(sql);
         return response.rows;
     }
     async query2(id){

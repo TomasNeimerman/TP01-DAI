@@ -8,7 +8,7 @@ export default class BD {
         this.client.connect();
     }
 
-    async query1(pageSize, requestedPage) {
+    async qAllE(pageSize, requestedPage) {
         const validations = [];
         if (pageSize) validations.push(`LIMIT ${pageSize}`);
         if (requestedPage) validations.push(`OFFSET ${requestedPage}`);
@@ -49,7 +49,7 @@ export default class BD {
         return answer.rows;
     }
 
-    async query2(name, category, startDate, tag) {
+    async qSerchE(name, category, startDate, tag) {
         const sql = `
             SELECT 
                 e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, 
@@ -91,7 +91,7 @@ export default class BD {
         return answer.rows;
     }
 
-    async query3(id) {
+    async qEventD(id) {
         const sql = `SELECT e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, e.max_assistance, e.id_event_category, e.id_event_location, e.id_creator_user, u.id AS user_id, u.username, u.first_name, u.last_name, ec.id AS eventcat_id, ec.name AS eventcat_name, ec.display_order,
         json_build_object(
             'id', el.id,
@@ -135,7 +135,7 @@ export default class BD {
         return answer.rows;
     }
 
-    async query4(id, first_name, last_name, username, attended, rating) {
+    async qPeopleL(id, first_name, last_name, username, attended, rating) {
         const sql = `
             SELECT
                 en.id AS enrollment_id,
@@ -159,7 +159,6 @@ export default class BD {
         
         if(variables[1] == `${first_name}` || variables[2] == `${last_name}` || variables[3] ==  `${username}`){
         const response = await this.client.query(sql);
-        console.log(response.rows);
         return response.rows;
         
         }
@@ -168,35 +167,31 @@ export default class BD {
         }
     }
 
-    async query5(evento) {
+    async qCreateE(evento) {
         const sql = `
             INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `;
-        const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+            VALUES (${evento.name}, ${evento.description}, ${evento.id_event_category}, ${evento.id_event_location}, ${evento.startDate}, ${evento.duration_in_minutes}, ${evento.price},
+            ${evento.enabled_for_enrollment}, ${evento.max_assistance}, ${evento.id_creator_user})`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
 
     async query6(evento) {
         const sql = `
             UPDATE events 
-            SET name = $1, description = $2, id_event_category = $3, id_event_location = $4, start_date = $5, duration_in_minutes = $6, price = $7, enabled_for_enrollment = $8, max_assistance = $9 
-            WHERE id = $10 AND id_creator_user = $11
-        `;
-        const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id, evento.id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+            SET name = ${evento.name}, description = ${evento.description}, id_event_category = ${evento.id_event_category}, id_event_location = ${evento.id_event_location},
+            start_date = ${evento.start_date}, duration_in_minutes = ${evento.duration_in_minutes}, price = ${evento.price}, enabled_for_enrollment = ${evento.enabled_for_enrollment}, max_assistance = ${evento.max_assistance}
+            WHERE id = ${evento.id} AND id_creator_user = ${evento.id_creator_user}`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
 
     async query7(id, id_creator_user) {
         const sql = `
             DELETE FROM events 
-            WHERE id = $1 AND id_creator_user = $2
-        `;
-        const variables = [id, id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+            WHERE id = ${id} AND id_creator_user = ${id_creator_user}`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
 
     async query8(idEL) {
@@ -241,32 +236,25 @@ export default class BD {
     }
 
     async query12(id_user, event_id) {
+        let registion = Date.now();
         const sql = `
             INSERT INTO event_enrollments (id_user, id_event, registration_date_time) 
-            VALUES ($1, $2, NOW())
-        `;
-        const variables = [id_user, event_id];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+            VALUES (${id_user}, ${event_id}, ${registion})`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
 
     async query13(id_user, event_id) {
         const sql = `
             DELETE FROM event_enrollments 
-            WHERE id_user = $1 AND id_event = $2
-        `;
-        const variables = [id_user, event_id];
-        const answer = await this.client.query(sql, variables);
+            WHERE id_user = ${id_user} AND id_event = ${event_id}`;
+        const answer = await this.client.query(sql);
         return answer;
     }
 
     async query14(id_user) {
-        const sql = `
-            SELECT * 
-            FROM users 
-            WHERE id = $1
-        `;
-        const answer = await this.client.query(sql, [id_user]);
+        const sql = `SELECT * FROM users WHERE id = ${id_user}`;
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 }

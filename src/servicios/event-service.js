@@ -14,7 +14,7 @@ export default class EventService {
     async getAllEvent(pageSize, requestedPage, path) {
         const pageSizes = this.parsedLimit(pageSize);
         const requestedPages = this.parsedOffset(requestedPage);
-        const answer = await bd.query1(pageSizes, requestedPages);
+        const answer = await bd.qAllE(pageSizes, requestedPages);
         const totalCount = answer.length;
         return answer.map(row => ({
             event: {
@@ -55,7 +55,7 @@ export default class EventService {
     }
 
     async searchEvents(name, category, startDate, tag, path) {
-        const answer = await bd.query2(name, category, startDate, tag);
+        const answer = await bd.qSerchE(name, category, startDate, tag);
         return answer.map(row => ({
             event: {
                 id: row.id,
@@ -92,7 +92,7 @@ export default class EventService {
     }
 
     async eventDetail(id) {
-        const answer = await bd.query3(id);
+        const answer = await bd.qEventD(id);
         return answer.map(row => ({
             event: {
                 id: row.id,
@@ -127,7 +127,7 @@ export default class EventService {
     }
 
     async peopleList(id, first_name, last_name, username, attended, rating) {
-        const answer = await bd.query4(id, first_name, last_name, username, attended, rating);
+        const answer = await bd.qPeopleL(id, first_name, last_name, username, attended, rating);
         return answer.map(row => ({
             user: {
                 id: row.user_id,
@@ -149,7 +149,7 @@ export default class EventService {
     }
 
     async createEvent(evento) {
-        return bd.query5(evento);
+        return bd.qCreateE(evento);
     }
 
     async editEvent(event) {
