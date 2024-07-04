@@ -68,7 +68,7 @@ router.get("/:id/enrollment", async(request, respose) => {
         console.reponse.status(404).json("not found")
       }
   }else{
-    consoleresponse.status(400).json({ message: "los parametros son todos nulos" });
+    console.response.status(400).json( "los parametros son todos nulos");
   }
 })
 

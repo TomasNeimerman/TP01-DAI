@@ -153,10 +153,19 @@ export default class BD {
             FROM
                 event_enrollments en
             JOIN
-                users u ON en.id_user = u.id`;
-        const variables = [id, first_name ? `%${first_name}%` : null, last_name ? `%${last_name}%` : null, username ? `%${username}%` : null, attended, rating];
-        const response = await this.client.query(sql, variables);
+                users u ON en.id_user = u.id
+            WHERE u.username = '${username}' OR u.last_name = '${last_name}' OR u.first_name = '${first_name}'   `;
+        const variables = [id, first_name, last_name , username , attended, rating];
+        
+        if(variables[1] == `${first_name}` || variables[2] == `${last_name}` || variables[3] ==  `${username}`){
+        const response = await this.client.query(sql);
+        console.log(response.rows);
         return response.rows;
+        
+        }
+        else{
+            console.log("Mal envio de variables")
+        }
     }
 
     async query5(evento) {

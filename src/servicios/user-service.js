@@ -37,8 +37,8 @@ async register(firstName, lastName, username, password) {
         }
 
         const userId = await bd.query3(firstName, lastName, username, password);
-
-        return { success: true, message: 'Usuario creado con éxito.'};
+        const userregistered = await bd.query4(username);
+        return { success: true, message: 'Usuario creado con éxito.:', username};
     } catch (error) {
         console.error('Error durante el registro de usuario:', error);
         throw new Error('Error interno del servidor');
