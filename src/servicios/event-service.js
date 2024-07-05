@@ -55,7 +55,7 @@ export default class EventService {
     }
 
     async searchEvents(name, category, startDate, tag, path) {
-        const answer = await bd.qSerchE(name, category, startDate, tag);
+        const answer = await bd.qSearchE(name, category, startDate, tag);
         return answer.map(row => ({
             event: {
                 id: row.id,
@@ -127,7 +127,8 @@ export default class EventService {
     }
 
     async peopleList(id, first_name, last_name, username, attended, rating) {
-        const answer = await bd.qPeopleL(id, first_name, last_name, username, attended, rating);
+        console.log(id, first_name, last_name, username, attended, rating)
+        const answer = await bd.qPeopleEnrolled(id, first_name, last_name, username, attended, rating);
         return answer.map(row => ({
             user: {
                 id: row.user_id,
@@ -153,9 +154,9 @@ export default class EventService {
     }
 
     async editEvent(event) {
-        const checkUser = await bd.query9(event.id);
+        const checkUser = await bd.qVerificateU(event.id);
         if (event.id_creator_user === checkUser[0].id_creator_user) {
-            await bd.query6(event);
+            await bd.qUpdateEvent(event);
             const answer = this.eventDetail(event.id)
             return answer
         } else {
@@ -164,10 +165,9 @@ export default class EventService {
     }
 
     async deleteEvent(id, id_creator_user) {
-        const checkUser = await bd.query9(id);
-        console.log(checkUser)
-        if (id_creator_user === checkUser[0].id_creator_user) {
-            return await bd.query7(id, id_creator_user);
+        const checkUser = await bd.qVerificateU(id);
+        if (id_creator_user == checkUser[0].id_creator_user) {
+            return await bd.qDeleteEvent(id, id_creator_user);
         } else {
             throw new Error("Usuario no autorizado para eliminar este evento");
         }
@@ -192,24 +192,24 @@ export default class EventService {
     }
 
     async maxCapacity(idEL) {
-        return await bd.query8(idEL);
+        return await bd.qGetMaxCapacity(idEL);
     }
 
     async checkEnrolled(id) {
-        const enrollment = await bd.query10(id);
+        const enrollment = await bd.qGetEnrolled(id);
         return Number(enrollment[0].count);
     }
 
     async rateEvent(id_evento, rating, observations, id_user) {
-        return await bd.query11(id_evento, rating, observations, id_user);
+        return await bd.qRateEvent(id_evento, rating, observations, id_user);
     }
 
     async verifyEnroll(id_evento, rating, id_user) {
-        const userTa = await bd.query14(id_user);
+        const userTa = await bd.qVerificateU(id_user);
         if (!userTa.length) {
             return "No está inscrito el usuario";
         }
-        const event = await bd.query3(id_evento);
+        const event = await bd.qEventD(id_evento);
         if (!event.length) {
             return false;
         }
@@ -225,26 +225,24 @@ export default class EventService {
     }
 
     async enrollEvent(id_user, event_id) {
-        const event = await bd.query3(event_id);
+        const event = await bd.qEnrollEvent(event_id);
         if (!event.length) {
-            throw new Error("Evento no encontrado");
-        }
+            throw new Error("Evento no encontrado");}
         const { max_assistance, start_date, enabled_for_enrollment } = event[0];
         const currentEnrolled = await this.checkEnrolled(event_id);
         if (currentEnrolled >= max_assistance) {
-            throw new Error("Capacidad máxima alcanzada");
-        }
+            throw new Error("Capacidad máxima alcanzada");}
         if (new Date(start_date) <= new Date()) {
             throw new Error("No se puede inscribir a un evento que ya ocurrió o está ocurriendo hoy");
         }
         if (!enabled_for_enrollment) {
             throw new Error("Evento no habilitado para inscripción");
         }
-        return bd.query12(id_user, event_id);
+        return bd.qEnrollEvent(id_user, event_id);
     }
 
     async unrollEvent(id_user, event_id) {
-        const event = await bd.query3(event_id);
+        const event = await bd.qUnrollEvent(event_id);
         if (!event.length) {
             throw new Error("Evento no encontrado");
         }
@@ -252,6 +250,6 @@ export default class EventService {
         if (new Date(start_date) <= new Date()) {
             throw new Error("No se puede desinscribir de un evento que ya ocurrió o está ocurriendo hoy");
         }
-        return bd.query13(id_user, event_id);
+        return bd.qUnrollEvent(id_user, event_id);
     }
 }

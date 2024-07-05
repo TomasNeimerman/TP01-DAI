@@ -7,34 +7,34 @@ export default class BD{
         this.client = new Client(Bd_config);
         this.client.connect();
     }
-    async query1(name, full_name, latitude, longitude, display_order) {
+    async qCreateProvince(name, full_name, latitude, longitude, display_order) {
         const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${name}', '${full_name}', '${latitude}', '${longitude}', '${display_order}')`;
         const answer = await this.client.query(sql);
         return answer.rows; 
     }
-    async query2(id, name, full_name, latitude, longitude, display_order) {
+    async qUpdateProvince(id, name, full_name, latitude, longitude, display_order) {
         const sql = `UPDATE provinces SET name = '${name}', full_name = '${full_name}', latitude = '${latitude}', longitude = '${longitude}', display_order = '${display_order}'
         WHERE id = '${id}'`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
-    async query3(id) {
+    async qDeleteProvince(id) {
         const sql = `DELETE FROM provinces WHERE id = '${id}'`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
-    async query4(){
+    async qGetProvince(){
         const sql = `SELECT * FROM PROVINCES`
         const answer = await this.client.query(sql);
         return answer.rows;
     }
-    async query5(id) {
+    async qGetPbyId(id) {
         const sql = `SELECT * from provinces WHERE id = '${id}'`
         const answer = await this.client.query(sql);
         return answer.rows;
     }
     
-    async query6(id,limit,offset) {
+    async qGetLocations(id,limit,offset) {
         const sql = `SELECT * FROM locations WHERE id_province = '${id}' LIMIT ${limit} OFFSET ${offset}`;
         const answer = await this.client.query(sql);
         return answer.rows;

@@ -3,7 +3,7 @@ const bd = new BD();
 
 export default class ProvinceService {
     async getProvince() {
-        const province = await bd.query4();
+        const province = await bd.qGetProvince();
         const provArray = province.map((row) => {
             var provObj = new Object()
             provObj.id = row.id;
@@ -20,7 +20,7 @@ export default class ProvinceService {
     }
 
     async getProvinceById(id){
-        const province = await bd.query5(id)
+        const province = await bd.qGetPbyId(id)
        
         return  province.map((row) =>{
             return {
@@ -39,7 +39,7 @@ export default class ProvinceService {
     async getLocationsByProvinceId(id){
         const limit = 15;
         const offset = 0;
-        const loc = await bd.query6(id,limit,offset)
+        const loc = await bd.qGetLocations(id,limit,offset)
         const dateBd = loc.map((row) =>{
         var locObj = new Object();
         locObj.id = row.id;
@@ -56,7 +56,7 @@ export default class ProvinceService {
     }
     CreateProvince(name, full_name, latitude, longitude, display_order){
         try{
-            return bd.query1(name, full_name, latitude, longitude, display_order)
+            return bd.qCreateProvince(name, full_name, latitude, longitude, display_order)
         }catch(error){
             console.log("Error al crear la provincia: ", error)
             throw error;
@@ -64,10 +64,10 @@ export default class ProvinceService {
         
     }
     EditProvince(id, name, full_name, latitude, longitude, display_order){
-        return bd.query2(id, name, full_name, latitude, longitude, display_order)
+        return bd.qUpdateProvince(id, name, full_name, latitude, longitude, display_order)
     }
     DeleteProvince(id){
-        return bd.query3(id);
+        return bd.qDeleteProvince(id);
     }
     
 }

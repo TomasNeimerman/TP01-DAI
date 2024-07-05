@@ -5,7 +5,7 @@ export default class CategoryService {
     async getAllCategories(limit, offset) {
         limit = 15
         offset = 0
-        const category = await bd.query1(limit,offset)
+        const category = await bd.qGetCategory(limit,offset)
         const dateBd = category.map(row =>{ 
             const catO = new Object();
             catO.id = row.id,
@@ -20,7 +20,7 @@ export default class CategoryService {
     return dateBd;
     }
     async categoryById(id){
-        const category = await bd.query2(id);
+        const category = await bd.qGetCbyId(id);
         return category.map((row) => {
             return {
                 id: row.id,
@@ -30,12 +30,12 @@ export default class CategoryService {
         });
     }
     async CreateCategory(name,display_order){
-        return bd.query3(name,display_order);
+        return bd.qCreateCategory(name,display_order);
     }
     async EditCategory(id,name,display_order){
-        return bd.query4(id,name,display_order);
+        return bd.qUpdateCategory(id,name,display_order);
     }
     async DeleteCategory(id){
-        return bd.query5(id);
+        return bd.qDeleteCategory(id);
     }
 }

@@ -6,22 +6,12 @@ export default class BD {
     this.client = new pg.Client(Bd_config);
     this.client.connect();
   }
-  async query1(sql, values = []) {
-    try {
-        const respuesta = await this.client.query(sql, values);
-        return respuesta;
-    } catch (error) {
-        throw new Error("Error al realizar la consulta: " + error.message);
-    }
-}
 
- async query2(username, password) {
+ async qSearchU(username, password) {
     const sql = `
-        SELECT *FROM users WHERE username = $1 AND password = $2`;
-    const values = [username, password];
-    
+        SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
     try {
-        const respuesta = await this.client.query(sql, values);
+        const respuesta = await this.client.query(sql);
         return respuesta.rows[0];
     } catch (error) {
         console.error("Error al autenticar usuario:", error);
@@ -29,8 +19,8 @@ export default class BD {
     }
 }
 
-async query3(first_name, last_name, username, password) {
-    const num = await this.query5()
+async qRegisterU(first_name, last_name, username, password) {
+    const num = await this.qGetUserCount()
     let id = parseInt(num[0].count)
     const sql = `INSERT INTO users (id, first_name, last_name, username, password)
         VALUES ('${id+1}', '${first_name}', '${last_name}', '${username}', '${password}')
@@ -44,13 +34,13 @@ async query3(first_name, last_name, username, password) {
     }
 }
 
-async query2(username) {
-    const sql = `SELECT * FROM users WHERE username = $1`;
-    const answer = await this.client.query(sql, [username]);
+async qGetUsers(username) {
+    const sql = `SELECT * FROM users WHERE username = ${username}`;
+    const answer = await this.client.query(sql);
     return answer.rows
     
 }
-async query3(){
+async qGetUserCount(){
     const sql = `SELECT COUNT(*) FROM users`;
     const answer = await this.client.query(sql);
     return answer.rows

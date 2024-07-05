@@ -5,7 +5,7 @@ export default class LocationService{
     async getAllLocations(limit, offset) {
         limit = 15
         offset = 0
-        const location = await bd.query1(limit,offset)
+        const location = await bd.qAllL(limit,offset)
         const dateBd = location.map(row =>{ 
             const locO = new Object();
             locO.id = row.id,
@@ -23,7 +23,7 @@ export default class LocationService{
     return dateBd;
     }
     async locationById(id){
-        const location = await bd.query2(id);
+        const location = await bd.qLocationById(id);
         return location.map((row) => {
             return {
                 id: row.id,
@@ -34,8 +34,8 @@ export default class LocationService{
             };
         });
     }
-    async eventLocations(id,userId){
-        const location = await bd.query3(id,userId);
+    async eventLocationsUserVerify(id,userId){
+        const location = await bd.qLocationByIdAndUser(id,userId);
         return location.map((row)=>{
             return {
                 id:row.id,

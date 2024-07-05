@@ -7,10 +7,8 @@ export default async function generateToken(user) {
     expiresIn: "1h",
     issuer: "pablo y tomas",
   };
-
   const payload = {
-    id: user.id,
-    username: user.username
+    id: user.id
   };
 
   console.log(payload);

@@ -12,11 +12,12 @@ router.post("/login", async (req, res) => {
 
   try {
       const usuario = await userService.login(username, password);
-      const token = await generateToken(usuario[0]);
+      console.log(usuario)
+      const token = await generateToken(usuario);
       await encriptartoken(token);
       return res.json({
           success: true,
-          message: `¡Bienvenido ${usuario[0].first_name} ${usuario[0].last_name}!`,
+          message: `¡Bienvenido ${usuario.first_name} ${usuario.last_name}!`,
           token
       });
   } catch (error) {

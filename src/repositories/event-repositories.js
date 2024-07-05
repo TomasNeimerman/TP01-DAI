@@ -55,7 +55,7 @@ export default class BD {
         return answer.rows;
     }
 
-    async query2(name, category, startDate, tag) {
+    async qSearchE(name, category, startDate, tag) {
         const verify = [];
         if (name)verify.push(`e.name = '${name}'`);
         if (category) verify.push(`ec.id = '${category}'`);
@@ -146,12 +146,15 @@ export default class BD {
         return answer.rows;
     }
 
-    async query4(id, first_name, last_name, username, attended, rating) {
+    async qPeopleEnrolled(id, first_name, last_name, username, attended, rating) {
+        console.log(first_name,last_name,username,attended,rating);
         const verify = [];
         if (first_name) verify.push(`u.first_name = '${first_name}'`);
         if (last_name)verify.push(`u.last_name = '${last_name}'`);
-        if (attended)verify.push(`el.attended = '${attended}'`);
-        if (rating)verify.push(`el.rating = '${rating}'`);
+        if (username)verify.push(`u.username = '${username}' `);
+        if (attended)verify.push(`en.attended = '${attended}'`);
+        if (rating)verify.push(`en.rating = '${rating}'`);
+        console.log(verify.length)
         const sql = `
             SELECT
                 en.id AS enrollment_id,
@@ -181,102 +184,78 @@ export default class BD {
     async qCreateE(evento) {
         const sql = `
             INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `;
-        const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
-    }
-
-    async query6(evento) {
-        const sql = `
-            UPDATE events 
-            SET name = $1, description = $2, id_event_category = $3, id_event_location = $4, start_date = $5, duration_in_minutes = $6, price = $7, enabled_for_enrollment = $8, max_assistance = $9 
-            WHERE id = $10 AND id_creator_user = $11
-        `;
-        const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id, evento.id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
-    }
-
-    async query7(id, id_creator_user) {
-        const sql = `
-            DELETE FROM events 
-            WHERE id = $1 AND id_creator_user = $2
-        `;
-        const variables = [id, id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
-    }
-
-    async query8(idEL) {
-        const sql = `
-            SELECT max_capacity 
-            FROM event_locations 
-            WHERE id = '${idEL}'
-        `;
-        const maxC = await this.client.query(sql);
-        return maxC.rows;
-    }
-
-    async query9(idEV) {
-        const sql = `
-            SELECT id_creator_user 
-            FROM events 
-            WHERE id = '${idEV}'
+            VALUES (${evento.name}, ${evento.description}, ${evetno.id_event_category}, ${evento.id_event_location}, ${evento.start_date}, ${evento.duration_in_minutes}, ${evento.price}, ${evento.enabled_for_enrollment}, ${evento.max_assistance}, ${evento.id_creator_user})
         `;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
 
-    async query10(id) {
+    async qUpdateEvent(evento) {
         const sql = `
-            SELECT COUNT(*) 
-            FROM event_enrollments 
-            WHERE id_event = '${id}'
+            UPDATE events 
+            SET name = ${evento.name}, description = ${evento.description}, id_event_category = ${evento.id_event_category}, id_event_location = ${evento.id_event_location}, start_date = ${evento.start_date}, duration_in_minutes = ${evento.duration_in_minutes}, price = ${evento.price}, enabled_for_enrollment = ${evento.enabled_for_enrollment}, max_assistance = ${evento.max_assistance} 
+            WHERE id = ${evento.id} AND id_creator_user = ${evento.id_creator_user}
+        `;
+        const answer = await this.client.query(sql, variables);
+        return answer.rows;
+    }
+
+    async qDeleteEvent(id, id_creator_user) {
+        const sql = `
+            DELETE FROM events WHERE id = ${id} AND id_creator_user = ${id_creator_user}`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
+        
+    }
+
+    async qGetMaxCapacity(idEL) {
+        const sql = `
+            SELECT max_capacity FROM event_locations WHERE id = '${idEL}'`;
+        const maxC = await this.client.query(sql);
+        return maxC.rows;
+    }
+
+    async qGetUserCreator(idEV) {
+        const sql = `
+            SELECT id_creator_user FROM events WHERE id = '${idEV}'`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
+    }
+
+    async qGetEnrolled(id) {
+        const sql = `
+            SELECT COUNT(*) FROM event_enrollments WHERE id_event = '${id}'
         `;
         const enrollment = await this.client.query(sql);
         return enrollment.rows;
     }
 
-    async query11(id_event, rating, observations, id_user) {
+    async qRateEvent(id_event, rating, observations, id_user) {
         const sql = `
-            UPDATE event_enrollments 
-            SET attended = true, rating = '${rating}', observations = '${observations}', description = '${observations}' 
-            WHERE id_event = '${id_event}' AND id_user = '${id_user}'
+            UPDATE event_enrollments SET attended = true, rating = '${rating}', observations = '${observations}', description = '${observations}' WHERE id_event = '${id_event}' AND id_user = '${id_user}'
         `;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
 
-    async query12(id_user, event_id) {
-        let registion = Date.now();
+    async qEnrollEvent(id_user, event_id) {
+        let registation = Date.now();
         const sql = `
-            INSERT INTO event_enrollments (id_user, id_event, registration_date_time) 
-            VALUES ($1, $2, NOW())
-        `;
-        const variables = [id_user, event_id];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+            INSERT INTO event_enrollments (id_user, id_event, registration_date_time) VALUES (${id_user}, ${event_id}, ${registation})`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
 
-    async query13(id_user, event_id) {
+    async qUnrollEvent(id_user, event_id) {
         const sql = `
-            DELETE FROM event_enrollments 
-            WHERE id_user = $1 AND id_event = $2
-        `;
-        const variables = [id_user, event_id];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+            DELETE FROM event_enrollments WHERE id_user = ${id_user} AND id_event = ${event_id}`;
+        const answer = await this.client.query(sql);
+        return answer.rows;
     }
 
-    async query14(id_user) {
-        const sql = `
-            SELECT * 
-            FROM users 
-            WHERE id = $1
-        `;
-        const answer = await this.client.query(sql, [id_user]);
+    async  qVerificateU(id_user) {
+        const sql = `SELECT * FROM users WHERE id = ${id_user}`;
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 }

@@ -20,27 +20,27 @@ export default class EventLocationService {
     }
 
     async createEventLocation(eventLocation) {
-        return bd.query3(eventLocation);
+        return bd.qCreteEL(eventLocation);
     }
 
     async updateEventLocation(eventLocation) {
-        const existingLocation = await bd.query2(eventLocation.id_creator_user, eventLocation.id);
+        const existingLocation = await bd.qUpdateEL(eventLocation.id_creator_user, eventLocation.id);
         if (!existingLocation.length) {
             return false;
         }
-        return bd.updateEventLocation(eventLocation);
+        return bd.qUpdateEL(eventLocation);
     }
 
     async deleteEventLocation(id, id_creator_user) {
-        const existingLocation = await bd.query2(id_creator_user, id);
+        const existingLocation = await bd.qDeleteEL(id_creator_user, id);
         if (!existingLocation.length) {
             return false;
         }
-        return bd.deleteEventLocation(id, id_creator_user);
+        return bd.qDeleteEL(id, id_creator_user);
     }
 
     async getEventLocations(user) {
-        const evLocation = await bd.query1(user);
+        const evLocation = await bd.qAllEL(user);
         return evLocation.map(row => ({
             id: row.id,
             id_location: row.id_location,
@@ -54,7 +54,7 @@ export default class EventLocationService {
     }
 
     async getEventLocationById(user, id) {
-        const evLocation = await bd.query2(user, id);
+        const evLocation = await bd.qSerchById(user, id);
         return evLocation.map(row => ({
             id: row.id,
             id_location: row.id_location,
