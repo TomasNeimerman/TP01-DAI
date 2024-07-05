@@ -147,6 +147,11 @@ export default class BD {
     }
 
     async query4(id, first_name, last_name, username, attended, rating) {
+        const verify = [];
+        if (first_name) verify.push(`u.first_name = '${first_name}'`);
+        if (last_name)verify.push(`u.last_name = '${last_name}'`);
+        if (attended)verify.push(`el.attended = '${attended}'`);
+        if (rating)verify.push(`el.rating = '${rating}'`);
         const sql = `
             SELECT
                 en.id AS enrollment_id,
