@@ -165,6 +165,7 @@ export default class EventService {
 
     async deleteEvent(id, id_creator_user) {
         const checkUser = await bd.query9(id);
+        console.log(checkUser)
         if (id_creator_user === checkUser[0].id_creator_user) {
             return await bd.query7(id, id_creator_user);
         } else {

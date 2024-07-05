@@ -8,7 +8,7 @@ export default class BD{
         this.client.connect();
     }
     async query1(name, full_name, latitude, longitude, display_order) {
-        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${name}', '${full_name}', '${latitude}', '${longitude}', ${display_order})`;
+        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${name}', '${full_name}', '${latitude}', '${longitude}', '${display_order}')`;
         const answer = await this.client.query(sql);
         return answer.rows; 
     }
@@ -35,7 +35,7 @@ export default class BD{
     }
     
     async query6(id,limit,offset) {
-        const sql = `SELECT * FROM locations INNER JOIN Provinces WHERE id_province = '${id}' LIMIT ${limit} OFFSET ${offset}`;
+        const sql = `SELECT * FROM locations WHERE id_province = '${id}' LIMIT ${limit} OFFSET ${offset}`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }  

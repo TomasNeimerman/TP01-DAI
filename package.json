@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "test",
+    "test": "echo \"Error: Sin test\" && exit 1 ",
     "start": "nodemon server.js"
   },
   "repository": {

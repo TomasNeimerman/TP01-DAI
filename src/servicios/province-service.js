@@ -55,7 +55,13 @@ export default class ProvinceService {
        return dateBd;
     }
     CreateProvince(name, full_name, latitude, longitude, display_order){
-        return bd.query1(name, full_name, latitude, longitude, display_order)
+        try{
+            return bd.query1(name, full_name, latitude, longitude, display_order)
+        }catch(error){
+            console.log("Error al crear la provincia: ", error)
+            throw error;
+        }
+        
     }
     EditProvince(id, name, full_name, latitude, longitude, display_order){
         return bd.query2(id, name, full_name, latitude, longitude, display_order)

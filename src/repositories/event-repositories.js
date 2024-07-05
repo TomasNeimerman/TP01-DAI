@@ -56,6 +56,11 @@ export default class BD {
     }
 
     async query2(name, category, startDate, tag) {
+        const verify = [];
+        if (name)verify.push(`e.name = '${name}'`);
+        if (category) verify.push(`ec.id = '${category}'`);
+        if (startDate) verify.push(`e.start_date = '${startDate}'`);
+        if (tag) verify.push(`t.id = '${tag}'`);
         const sql = `
            SELECT 
                 e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, 
