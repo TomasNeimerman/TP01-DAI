@@ -149,13 +149,16 @@ export default class EventService {
     }
 
     async createEvent(evento) {
-        return bd.query5(evento);
+       const event = await bd.query5(evento);
+       return response;
     }
 
     async editEvent(event) {
         const checkUser = await bd.query9(event.id);
         if (event.id_creator_user === checkUser[0].id_creator_user) {
-            return await bd.query6(event);
+            await bd.query6(event);
+            const answer = this.eventDetail(event.id)
+            return answer
         } else {
             throw new Error("Usuario no autorizado para editar este evento");
         }

@@ -5,7 +5,7 @@ export default async function generateToken(user) {
  
   const options = {
     expiresIn: "1h",
-    issuer: "neotictom",
+    issuer: "pablo y tomas",
   };
 
   const payload = {

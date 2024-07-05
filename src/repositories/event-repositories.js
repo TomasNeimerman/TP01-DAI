@@ -24,7 +24,13 @@ export default class BD {
                 json_build_object('id', l.id, 'name', l.name, 'latitude', l.latitude, 'longitude', l.longitude) AS location,
                 json_build_object('id', p.id, 'name', p.name, 'full_name', p.full_name, 'latitude', p.latitude,
                 'longitude', p.longitude, 'display_order', p.display_order) AS province,
-                json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                 array(
+            SELECT json_build_object(
+                'id', tags.id,
+                'name', tags.name
+            )
+            FROM tags
+        ) AS tags
             FROM 
                 events e
             JOIN 
@@ -50,8 +56,14 @@ export default class BD {
     }
 
     async query2(name, category, startDate, tag) {
+        const verify = [];
+        if (name)verify.push(`e.name = '${name}'`);
+        if (category) verify.push(`ec.id = '${category}'`);
+        if (startDate) verify.push(`e.start_date = '${startDate}'`);
+        if (tag) verify.push(`t.id = '${tag}'`);
+      
         const sql = `
-            SELECT 
+           SELECT 
                 e.id, e.name, e.description, e.start_date, e.duration_in_minutes, e.price, 
                 e.enabled_for_enrollment, e.max_assistance, e.id_event_category, e.id_event_location, 
                 e.id_creator_user, u.id AS user_id, u.username, u.first_name, u.last_name, 
@@ -61,7 +73,13 @@ export default class BD {
                 json_build_object('id', l.id, 'name', l.name, 'latitude', l.latitude, 'longitude', l.longitude) AS location,
                 json_build_object('id', p.id, 'name', p.name, 'full_name', p.full_name, 'latitude', p.latitude,
                 'longitude', p.longitude, 'display_order', p.display_order) AS province,
-                json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                array(
+                    SELECT json_build_object(
+                        'id', tags.id,
+                        'name', tags.name
+                    )
+                    FROM tags
+                ) AS tags
             FROM 
                 events e
             JOIN 
@@ -78,16 +96,10 @@ export default class BD {
                 locations l ON el.id_location = l.id
             JOIN 
                 provinces p ON l.id_province = p.id
-            WHERE 
-                ($1::text IS NULL OR e.name ILIKE $1)
-                AND ($2::int IS NULL OR e.id_event_category = $2)
-                AND ($3::date IS NULL OR e.start_date = $3)
-                AND ($4::text IS NULL OR t.name ILIKE $4)
-            GROUP BY 
-                e.id, u.id, ec.id, el.id, l.id, p.id
+            ${verify.length > 0 ? `WHERE ${verify.join(' AND ')}` : ''}
+            GROUP BY  e.id, u.id, ec.id, el.id, l.id, p.id    
         `;
-        const variables = [name ? `%${name}%` : null, category, startDate, tag ? `%${tag}%` : null];
-        const answer = await this.client.query(sql, variables);
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 
@@ -130,12 +142,18 @@ export default class BD {
         LEFT JOIN tags t ON et.id_tag = t.id
         LEFT JOIN locations l ON el.id_location = l.id
         LEFT JOIN provinces p ON l.id_province = p.id
-        WHERE e.id = ${id} GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, el.id, l.id, p.id`;
+        WHERE e.id = '${id} 'GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, el.id, l.id, p.id`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
 
     async query4(id, first_name, last_name, username, attended, rating) {
+        const verify = [];
+        if (first_name) verify.push(`u.first_name = '${first_name}'`);
+        if (last_name)verify.push(`u.last_name = '${last_name}'`);
+        if (attended)verify.push(`el.attended = '${attended}'`);
+        if (rating)verify.push(`el.rating = '${rating}'`);
+       
         const sql = `
             SELECT
                 en.id AS enrollment_id,
@@ -154,48 +172,40 @@ export default class BD {
                 event_enrollments en
             JOIN
                 users u ON en.id_user = u.id
-            WHERE u.username = '${username}' OR u.last_name = '${last_name}' OR u.first_name = '${first_name}'   `;
-        const variables = [id, first_name, last_name , username , attended, rating];
-        
-        if(variables[1] == `${first_name}` || variables[2] == `${last_name}` || variables[3] ==  `${username}`){
+            ${verify.length > 0 ? `WHERE ${verify.join(' AND ')}` : ''}
+            `;
+           
         const response = await this.client.query(sql);
-        console.log(response.rows);
         return response.rows;
         
-        }
-        else{
-            console.log("Mal envio de variables")
-        }
     }
 
     async query5(evento) {
         const sql = `
-            INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `;
-        const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id_creator_user];
-        const answer = await this.client.query(sql, variables);
-        return answer;
+        INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `;
+    const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id_creator_user];
+        const answer = await this.client.query(sql,variables);
+        return answer.rows;
     }
 
     async query6(evento) {
         const sql = `
             UPDATE events 
-            SET name = $1, description = $2, id_event_category = $3, id_event_location = $4, start_date = $5, duration_in_minutes = $6, price = $7, enabled_for_enrollment = $8, max_assistance = $9 
-            WHERE id = $10 AND id_creator_user = $11
+            SET name = '${evento.name}', description = '${evento.description}', id_event_category = '${evento.id_event_category}', id_event_location = '${evento.id_event_location}', start_date = '${evento.start_date}', duration_in_minutes = '${evento.duration_in_minutes}', price = '${evento.price}', enabled_for_enrollment = '${evento.enabled_for_enrollment}', max_assistance = '${evento.max_assistance}' 
+            WHERE id = '${evento.id}' AND id_creator_user = '${evento.id_creator_user}'
         `;
-        const variables = [evento.name, evento.description, evento.id_event_category, evento.id_event_location, evento.start_date, evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment, evento.max_assistance, evento.id, evento.id_creator_user];
-        const answer = await this.client.query(sql, variables);
+        const answer = await this.client.query(sql);
         return answer;
     }
 
     async query7(id, id_creator_user) {
         const sql = `
-            DELETE FROM events 
-            WHERE id = $1 AND id_creator_user = $2
+            DELETE from event_tags where id_event = ${id}; DELETE from events where id = ${id}
         `;
-        const variables = [id, id_creator_user];
-        const answer = await this.client.query(sql, variables);
+      
+        const answer = await this.client.query(sql);
         return answer;
     }
 
@@ -203,9 +213,9 @@ export default class BD {
         const sql = `
             SELECT max_capacity 
             FROM event_locations 
-            WHERE id = $1
+            WHERE id = '${idEL}'
         `;
-        const maxC = await this.client.query(sql, [idEL]);
+        const maxC = await this.client.query(sql);
         return maxC.rows;
     }
 
@@ -213,9 +223,9 @@ export default class BD {
         const sql = `
             SELECT id_creator_user 
             FROM events 
-            WHERE id = $1
+            WHERE id = '${idEV}'
         `;
-        const answer = await this.client.query(sql, [idEV]);
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 
@@ -223,40 +233,39 @@ export default class BD {
         const sql = `
             SELECT COUNT(*) 
             FROM event_enrollments 
-            WHERE id_event = $1
+            WHERE id_event = '${id}'
         `;
-        const enrollment = await this.client.query(sql, [id]);
+        const enrollment = await this.client.query(sql);
         return enrollment.rows;
     }
 
     async query11(id_event, rating, observations, id_user) {
         const sql = `
             UPDATE event_enrollments 
-            SET attended = true, rating = $1, observations = $2, description = $2 
-            WHERE id_event = $3 AND id_user = $4
+            SET attended = true, rating = '${rating}', observations = '${observations}', description = '${observations}' 
+            WHERE id_event = '${id_event}' AND id_user = '${id_user}'
         `;
-        const variables = [rating, observations, id_event, id_user];
-        const answer = await this.client.query(sql, variables);
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 
     async query12(id_user, event_id) {
         const sql = `
             INSERT INTO event_enrollments (id_user, id_event, registration_date_time) 
-            VALUES ($1, $2, NOW())
+            VALUES ('${id_user}', ${event_id}, NOW())
         `;
         const variables = [id_user, event_id];
-        const answer = await this.client.query(sql, variables);
+        const answer = await this.client.query(sql);
         return answer;
     }
 
     async query13(id_user, event_id) {
         const sql = `
             DELETE FROM event_enrollments 
-            WHERE id_user = $1 AND id_event = $2
+            WHERE id_user = '${id_user}' AND id_event = '${event_id}'
         `;
         const variables = [id_user, event_id];
-        const answer = await this.client.query(sql, variables);
+        const answer = await this.client.query(sql);
         return answer;
     }
 
@@ -264,9 +273,9 @@ export default class BD {
         const sql = `
             SELECT * 
             FROM users 
-            WHERE id = $1
+            WHERE id = '${id_user}'
         `;
-        const answer = await this.client.query(sql, [id_user]);
+        const answer = await this.client.query(sql);
         return answer.rows;
     }
 }

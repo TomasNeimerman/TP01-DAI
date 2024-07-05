@@ -37,9 +37,7 @@ router.post("/register", async (req, res) => {
       const resultadoRegistro = await userService.register(first_name, last_name, username, password);
 
       return res.status(201).json({
-          success: true,
-          message: resultadoRegistro.message,
-          userId: resultadoRegistro.userId
+          resultadoRegistro
       });
   } catch (error) {
       console.error("Error durante el registro de usuario:", error);

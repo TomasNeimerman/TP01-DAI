@@ -5,7 +5,7 @@ const bd = new BD();
 export default class UserService {
   async login(username, password) {
     try {
-        const usuario = await bd.query4(username);
+        const usuario = await bd.query2(username);
 
         if (!usuario) {
             console.log("Usuario no encontrado")
@@ -29,15 +29,15 @@ async register(firstName, lastName, username, password) {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(username)) {
-            throw new Error('El email es inválido.');
+            throw new Error('El email es ilnváido.');
         }
 
         if (password.length < 3) {
             throw new Error('El campo password debe tener al menos tres caracteres.');
         }
 
-        const userId = await bd.query3(firstName, lastName, username, password);
-        const userregistered = await bd.query4(username);
+        const userId = await bd.query1(firstName, lastName, username, password);
+        const userregistered = await bd.query2(username);
         return { success: true, message: 'Usuario creado con éxito.:', username};
     } catch (error) {
         console.error('Error durante el registro de usuario:', error);

@@ -55,8 +55,9 @@ router.get("/:id/enrollment", async(request, respose) => {
   const rating = request.query.rating
   if(first_name != null || last_name != null || username != null || attended != attended || attended != null || rating != null){
       try{
-          const user = await eventService.peopleList(request.params.id, first_name, last_name, username, attended, rating)
-          console.log(user)
+          
+        const user = await eventService.peopleList(request.params.id, first_name, last_name, username, attended, rating)
+
           if(user){
               return respose.json(user)
           } else{
@@ -77,7 +78,6 @@ router.post("/", AuthMiddleware, async (request, response) => {
   const id_creator_user = request.user.id;
 
   const evento = { name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user };
-console.log(evento)
   try {
       const errorMsg = await eventService.checkParameters(evento);
       if (errorMsg) {
@@ -85,8 +85,9 @@ console.log(evento)
       }
 
       const created = await eventService.createEvent(evento);
+      
       if (created) {
-          return response.status(201).json({ message: "Evento creado" });
+          return response.status(201).json(`Evento creado: ${showEvent}`);
       } else {
           return response.status(500).json({ message: "Error en la creación del evento" });
       }
@@ -108,10 +109,13 @@ router.put("/:id", AuthMiddleware, async (request, response) => {
       if (errorMsg) {
           return response.status(400).json({ message: errorMsg });
       }
-
+      const oldEvent = await eventService.eventDetail(id)
+      
       const updated = await eventService.editEvent(evento);
+      console.log(oldEvent);
+      console.log(updated)
       if (updated) {
-          return response.status(200).json({ message: "Evento actualizado correctamente" });
+          return response.status(200).json(`Evento actualizado, Version anterior: ${oldEvent} Version nueva: ${updated}`);
       } else {
           return response.status(404).json({ message: "Evento no encontrado o no pertenece al usuario autenticado" });
       }
