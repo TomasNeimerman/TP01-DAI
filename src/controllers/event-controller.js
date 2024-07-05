@@ -87,7 +87,7 @@ router.post("/", AuthMiddleware, async (request, response) => {
       const created = await eventService.createEvent(evento);
       
       if (created) {
-          return response.status(201).json(`Evento creado: ${showEvent}`);
+          return response.status(201).json(`Evento creado: ${created}`);
       } else {
           return response.status(500).json({ message: "Error en la creación del evento" });
       }
