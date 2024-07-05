@@ -8,14 +8,14 @@ export default class BD {
         this.client.connect();
     }
 
-    async qAllEL(uid) {
-        const sql = `SELECT * FROM event_locations WHERE id_creator_user = ${uid}`;
+    async qAllEL(limit,offset) {
+        const sql = `SELECT * FROM event_locations limit '${limit}' offset '${offset}'`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
 
-    async qSerchById(uid, id) {
-        const sql = `SELECT * FROM event_locations WHERE id = ${id} AND id_creator_user = ${uid}`;
+    async qSerchById(id) {
+        const sql = `SELECT * FROM event_locations WHERE id_location = ${id}' limit '${limit}' offset '${offset}' `;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
@@ -32,14 +32,14 @@ export default class BD {
     async qUpdateEL(eventLocation) {
         const sql = `
             UPDATE event_locations 
-            SET id_location = ${eventLocation.id_location}, name = ${eventLocation.name}, full_address = ${eventLocation.full_address}, max_capacity = ${eventLocation.max_capacity}, latitude = ${eventLocation.latitude}, longitude = ${eventLocation.longitude} 
+            SET id_location = '${eventLocation.id_location}', name = '${eventLocation.name}', full_address = '${eventLocation.full_address}', max_capacity = '${eventLocation.max_capacity}', latitude = '${eventLocation.latitude}', longitude = '${eventLocation.longitude}' 
             WHERE id = ${eventLocation.id} AND id_creator_user = ${eventLocation.id_creator_user}`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
 
-    async qDeleteEL(id, id_creator_user) {
-        const sql = `DELETE FROM event_locations WHERE id = ${id} AND id_creator_user = ${id_creator_user}`;
+    async qDeleteEL(id) {
+        const sql = `DELETE FROM event_locations WHERE id = '${id}'`;
         const answer = await this.client.query(sql);
         return answer.rows;
     }

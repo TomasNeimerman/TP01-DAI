@@ -184,25 +184,32 @@ export default class BD {
     async qCreateE(evento) {
         const sql = `
             INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) 
-            VALUES (${evento.name}, ${evento.description}, ${evetno.id_event_category}, ${evento.id_event_location}, ${evento.start_date}, ${evento.duration_in_minutes}, ${evento.price}, ${evento.enabled_for_enrollment}, ${evento.max_assistance}, ${evento.id_creator_user})
+            VALUES ('${evento.name}', '${evento.description}', ${evento.id_event_category}, ${evento.id_event_location}, '${evento.start_date}', ${evento.duration_in_minutes}, ${evento.price}, ${evento.enabled_for_enrollment}, ${evento.max_assistance}, ${evento.id_creator_user})
+        `;
+    
+        try {
+            const answer = await this.client.query(sql);
+            return answer.rows;
+        } catch (error) {
+            console.error('Error executing qCreateE:', error);
+            throw error;
+        }
+    }
+    
+
+    async qUpdateEvent(evento) {
+        const sql = `
+            UPDATE events 
+            SET name = '${evento.name}', description = '${evento.description}', id_event_category = '${evento.id_event_category}', id_event_location = '${evento.id_event_location}', start_date = '${evento.start_date}', duration_in_minutes = '${evento.duration_in_minutes}', price = '${evento.price}', enabled_for_enrollment = '${evento.enabled_for_enrollment}', max_assistance = '${evento.max_assistance}' 
+            WHERE id = '${evento.id}' AND id_creator_user = '${evento.id_creator_user}'
         `;
         const answer = await this.client.query(sql);
         return answer.rows;
     }
 
-    async qUpdateEvent(evento) {
-        const sql = `
-            UPDATE events 
-            SET name = ${evento.name}, description = ${evento.description}, id_event_category = ${evento.id_event_category}, id_event_location = ${evento.id_event_location}, start_date = ${evento.start_date}, duration_in_minutes = ${evento.duration_in_minutes}, price = ${evento.price}, enabled_for_enrollment = ${evento.enabled_for_enrollment}, max_assistance = ${evento.max_assistance} 
-            WHERE id = ${evento.id} AND id_creator_user = ${evento.id_creator_user}
-        `;
-        const answer = await this.client.query(sql, variables);
-        return answer.rows;
-    }
-
     async qDeleteEvent(id, id_creator_user) {
         const sql = `
-            DELETE FROM events WHERE id = ${id} AND id_creator_user = ${id_creator_user}`;
+            DELETE FROM event_enrollments WHERE id_event = '${id}'; DELETE FROM events WHERE id = ${id} AND id_creator_user = ${id_creator_user}`;
         const answer = await this.client.query(sql);
         return answer.rows;
         
@@ -239,13 +246,23 @@ export default class BD {
     }
 
     async qEnrollEvent(id_user, event_id) {
-        let registation = Date.now();
+        const registrationDateTime = new Date().toISOString(); 
+    
+        console.log(id_user, event_id, registrationDateTime);
+    
         const sql = `
-            INSERT INTO event_enrollments (id_user, id_event, registration_date_time) VALUES (${id_user}, ${event_id}, ${registation})`;
-        const answer = await this.client.query(sql);
-        return answer.rows;
+            INSERT INTO event_enrollments (id_user, id_event, registration_date_time)
+            VALUES ('${id_user}', '${event_id}', '${registrationDateTime}')`;
+    
+        try {
+            const answer = await this.client.query(sql);
+            return answer.rows;
+        } catch (error) {
+            console.error('Error executing qEnrollEvent:', error);
+            throw error;
+        }
     }
-
+    
     async qUnrollEvent(id_user, event_id) {
         const sql = `
             DELETE FROM event_enrollments WHERE id_user = ${id_user} AND id_event = ${event_id}`;

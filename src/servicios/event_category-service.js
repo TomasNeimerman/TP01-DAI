@@ -2,9 +2,21 @@ import BD from "../repositories/event_category-repositories.js";
 const bd = new BD();
 
 export default class CategoryService {
+
+    async verifyCategory(name, id){
+        if(name.lenght < 3 || name == null){
+            return false400
+        }else if(id != null){
+            const category = await bd.qGetCategory(id,limit, offset)
+            if(category == null){
+                return false404
+            }
+        }else{
+            return "no cumple con los requisitos, asignados"
+        }
+    }
+
     async getAllCategories(limit, offset) {
-        limit = 15
-        offset = 0
         const category = await bd.qGetCategory(limit,offset)
         const dateBd = category.map(row =>{ 
             const catO = new Object();
@@ -13,12 +25,11 @@ export default class CategoryService {
             catO.display_order = row.display_order;
             return{
             category: catO,
-        
         }  
-        
     })
     return dateBd;
     }
+
     async categoryById(id){
         const category = await bd.qGetCbyId(id);
         return category.map((row) => {
@@ -29,12 +40,15 @@ export default class CategoryService {
             };
         });
     }
+
     async CreateCategory(name,display_order){
         return bd.qCreateCategory(name,display_order);
     }
+
     async EditCategory(id,name,display_order){
         return bd.qUpdateCategory(id,name,display_order);
     }
+    
     async DeleteCategory(id){
         return bd.qDeleteCategory(id);
     }

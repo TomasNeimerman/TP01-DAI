@@ -8,9 +8,9 @@ export default class BD{
         this.client.connect();
     }
     async qCreateProvince(name, full_name, latitude, longitude, display_order) {
-        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${name}', '${full_name}', '${latitude}', '${longitude}', '${display_order}')`;
+        const sql = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ('${name}', '${full_name}', '${latitude}', '${longitude}', '${display_order}') RETURNING id` ;
         const answer = await this.client.query(sql);
-        return answer.rows; 
+        return answer.rows.id; 
     }
     async qUpdateProvince(id, name, full_name, latitude, longitude, display_order) {
         const sql = `UPDATE provinces SET name = '${name}', full_name = '${full_name}', latitude = '${latitude}', longitude = '${longitude}', display_order = '${display_order}'

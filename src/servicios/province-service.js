@@ -68,6 +68,20 @@ export default class ProvinceService {
     }
     DeleteProvince(id){
         return bd.qDeleteProvince(id);
+    } 
+
+    async checkParameters(name,latitude,longitude){
+        if(name.length < 3){
+            return "Nombre invalido";
+        } 
+        if(isNaN(latitude)){
+            return "Ingreso invalido en latitud, proba usando valores numericos";
+        }
+        if(isNaN(longitude)){
+            return "Ingreso incorrecto en longitud, proba usando valores numericos"
+        }
+
+
     }
-    
+   
 }

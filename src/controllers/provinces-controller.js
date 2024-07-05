@@ -8,8 +8,8 @@ router.get("/", async (request, response) => {
       const allProvinces = await provService.getProvince();
       return response.json(allProvinces);
     }catch (error) {
-            console.error("Error al buscar provincia", error);
-            return response.status(404).json("Error al buscar provincia");
+      console.error("Error al buscar provincia", error);
+      return response.status(404).json("Error al buscar provincia");
     }
       
 });
@@ -36,22 +36,26 @@ router.get("/:id/locations", async (request,response) =>{
   }
 });
 
-router.post("/", (request, response) => {
+router.post("/", async (request, response) => {
   const name = request.body.name;
   const full_name = request.body.full_name;
   const latitude = request.body.latitude;
   const longitude = request.body.longitude;
   const display_order = request.body.display_order;
   try {
-    provService.CreateProvince(name,full_name,latitude,longitude,display_order);
-    return response.status(201).json("Evento Creado");
+    const errorMsg = await provService.checkParameters(name,latitude,longitude);
+      if (errorMsg) {
+          return response.status(400).json({ message: errorMsg });
+      }
+    await provService.CreateProvince(name,full_name,latitude,longitude,display_order);
+    return response.status(201).json("Provincia creada");
   } catch (error) {
     console.log("error al crear provincia",error);
     return response.status(400).json("error al crear provincia");
   }
 });
-router.put("/", (request, response) => {
-  const id = request.body.id;
+router.put("/:id", async (request, response) => {
+  const id = request.params.id;
   const name = request.body.name;
   const full_name = request.body.full_name;
   const latitude = request.body.latitude;
@@ -65,7 +69,7 @@ router.put("/", (request, response) => {
     return response.json("error al editar provincia");
   }
 });
-router.delete("/:id", (request, response) => {
+router.delete("/:id", async (request, response) => {
   const id = request.params.id
   try {
     provService.DeleteProvince(id);

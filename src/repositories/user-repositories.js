@@ -35,7 +35,7 @@ async qRegisterU(first_name, last_name, username, password) {
 }
 
 async qGetUsers(username) {
-    const sql = `SELECT * FROM users WHERE username = ${username}`;
+    const sql = `SELECT * FROM users WHERE username = '${username}'`;
     const answer = await this.client.query(sql);
     return answer.rows
     

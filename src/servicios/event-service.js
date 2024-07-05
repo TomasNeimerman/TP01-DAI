@@ -93,7 +93,7 @@ export default class EventService {
 
     async eventDetail(id) {
         const answer = await bd.qEventD(id);
-        return answer.map(row => ({
+        const parsed = answer.map(row => ({
             event: {
                 id: row.id,
                 name: row.name,
@@ -124,6 +124,7 @@ export default class EventService {
             },
             tags: row.tags,
         }));
+        return parsed[0]
     }
 
     async peopleList(id, first_name, last_name, username, attended, rating) {
@@ -154,18 +155,13 @@ export default class EventService {
     }
 
     async editEvent(event) {
-        const checkUser = await bd.qVerificateU(event.id);
-        if (event.id_creator_user === checkUser[0].id_creator_user) {
-            await bd.qUpdateEvent(event);
-            const answer = this.eventDetail(event.id)
-            return answer
-        } else {
-            throw new Error("Usuario no autorizado para editar este evento");
-        }
+
+            return bd.qUpdateEvent(event)
+        
     }
 
     async deleteEvent(id, id_creator_user) {
-        const checkUser = await bd.qVerificateU(id);
+        const checkUser = await bd.qVerificateU(id_creator_user);
         if (id_creator_user == checkUser[0].id_creator_user) {
             return await bd.qDeleteEvent(id, id_creator_user);
         } else {
@@ -225,8 +221,8 @@ export default class EventService {
     }
 
     async enrollEvent(id_user, event_id) {
-        const event = await bd.qEnrollEvent(event_id);
-        if (!event.length) {
+        const event = await bd.qEnrollEvent(id_user,event_id);
+        if (event != null) {
             throw new Error("Evento no encontrado");}
         const { max_assistance, start_date, enabled_for_enrollment } = event[0];
         const currentEnrolled = await this.checkEnrolled(event_id);

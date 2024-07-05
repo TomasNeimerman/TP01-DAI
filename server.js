@@ -13,12 +13,12 @@ app.use(express.json());
 const port = 3600;
 
 
-app.use("/event", EventController);
-app.use("/user", UserController);
-app.use("/province", ProvincesController);
-app.use("/location", LocationController);
-app.use("/event-category", CategoryController);
-app.use("/event-location", EventLocationController)
+app.use("/api/event", EventController);
+app.use("/api/user", UserController);
+app.use("/api/province", ProvincesController);
+app.use("/api/location", LocationController);
+app.use("/api/event-category", CategoryController);
+app.use("/api/event-location", EventLocationController)
 app.listen(port, () =>{
     console.log(`Server running on port ${port}`)
 })

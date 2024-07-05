@@ -97,11 +97,10 @@ router.post("/", AuthMiddleware, async (request, response) => {
   }
 });
 
-router.put("/:id", AuthMiddleware, async (request, response) => {
-  const id = request.params.id;
-  const { name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance } = request.body;
+router.put("/", AuthMiddleware, async (request, response) => {
+  const {id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance } = request.body;
   const id_creator_user = request.user.id;
-
+  
   const evento = { id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user };
 
   try {
@@ -109,13 +108,14 @@ router.put("/:id", AuthMiddleware, async (request, response) => {
       if (errorMsg) {
           return response.status(400).json({ message: errorMsg });
       }
+      console.log(id)
       const oldEvent = await eventService.eventDetail(id)
-      
-      const updated = await eventService.editEvent(evento);
-      console.log(oldEvent);
-      console.log(updated)
+      await eventService.editEvent(evento);
+      const updated = await eventService.eventDetail(id)
+      console.log("Evento viejo: ",oldEvent);
+      console.log("Evento nuevo: ", updated)
       if (updated) {
-          return response.status(200).json(`Evento actualizado, Version anterior: ${oldEvent} Version nueva: ${updated}`);
+          return response.status(200).json({oldEvent, updated});
       } else {
           return response.status(404).json({ message: "Evento no encontrado o no pertenece al usuario autenticado" });
       }
